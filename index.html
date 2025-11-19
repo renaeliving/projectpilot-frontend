@@ -462,10 +462,49 @@
             const text = await res.text();
             throw new Error(text || res.statusText);
           }
-          const data = await res.json();
-          const reply = (data.reply || "").trim() || "I’m not sure how to respond to that.";
-          appendBubble(reply, "assistant");
-          speakText(reply);
+         async function callBackend(userMessage) {
+  if (!BACKEND_URL.includes("http")) {
+    appendBubble(
+      "Backend URL is not configured yet. Ask your admin to update BACKEND_URL in the widget code.",
+      "assistant"
+    );
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMessage }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || res.statusText);
+    }
+
+    const data = await res.json();
+    const reply =
+      (data.reply || "").trim() || "I’m not sure how to respond to that.";
+
+    appendBubble(reply, "assistant");
+
+    // ⭐ NEW: pass ElevenLabs audio if present
+    const audioBase64 = data.audioBase64 || null;
+    speakText(reply, audioBase64);
+  } catch (err) {
+    appendBubble(
+      "There was an error contacting the ProjectPilot server. Please try again in a moment.",
+      "assistant"
+    );
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+}
+
         } catch (err) {
           appendBubble("There was an error contacting the ProjectPilot server. Please try again in a moment.", "assistant");
           console.error(err);
@@ -522,27 +561,69 @@ Help me identify project risks for a ${type} project.
       });
 
       // ---- SPEECH: OUTPUT (ElevenLabs audio is generated server-side) ----
-      function speakText(text) {
-        // In the current setup audio is handled by ElevenLabs on the server,
-        // so we don't need browser TTS here. This is left as a fallback:
-        if (!("speechSynthesis" in window)) return;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
+let currentAudio = null; // track current playback
 
-        utterance.onstart = function () {
-          if (avatarEl) avatarEl.classList.add("talking");
-        };
-        utterance.onend = function () {
-          if (avatarEl) avatarEl.classList.remove("talking");
-        };
-        utterance.onerror = function () {
-          if (avatarEl) avatarEl.classList.remove("talking");
-        };
-
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
+function speakText(text, audioBase64) {
+  // 1) Prefer ElevenLabs audio from the backend if provided
+  if (audioBase64) {
+    try {
+      // Stop any previous audio
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
       }
+
+      const src = "data:audio/mpeg;base64," + audioBase64;
+      const audio = new Audio(src);
+      currentAudio = audio;
+
+      audio.onplay = function () {
+        if (avatarEl) avatarEl.classList.add("talking");
+      };
+      audio.onended = function () {
+        if (avatarEl) avatarEl.classList.remove("talking");
+        currentAudio = null;
+      };
+      audio.onerror = function (e) {
+        console.error("Audio playback error:", e);
+        if (avatarEl) avatarEl.classList.remove("talking");
+        currentAudio = null;
+      };
+
+      audio.play().catch((err) => {
+        console.error("Error starting audio playback:", err);
+        if (avatarEl) avatarEl.classList.remove("talking");
+      });
+
+      return; // ✅ don’t fall through to browser TTS
+    } catch (err) {
+      console.error("Error using ElevenLabs audio:", err);
+      if (avatarEl) avatarEl.classList.remove("talking");
+      // fall through to browser TTS
+    }
+  }
+
+  // 2) Fallback: browser speech synthesis
+  if (!("speechSynthesis" in window)) return;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+
+  utterance.onstart = function () {
+    if (avatarEl) avatarEl.classList.add("talking");
+  };
+  utterance.onend = function () {
+    if (avatarEl) avatarEl.classList.remove("talking");
+  };
+  utterance.onerror = function () {
+    if (avatarEl) avatarEl.classList.remove("talking");
+  };
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
 
       // ---- SPEECH: INPUT (browser SpeechRecognition) ----
       let recognition = null;
@@ -599,6 +680,7 @@ Help me identify project risks for a ${type} project.
   </script>
 </body>
 </html>
+
 
 
 
