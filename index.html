@@ -2,343 +2,198 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Aero – Your AI Project Coach</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aero – Your AI Project Coach</title>
+
   <style>
-    :root {
-      --bg: #020617;
-      --card: #020617;
-      --card-elevated: #020617;
-      --border-subtle: rgba(148, 163, 184, 0.22);
-      --fg: #e5e7eb;
-      --fg-muted: #9ca3af;
-      --primary: #0ea5e9;
-      --primary-soft: rgba(56, 189, 248, 0.15);
-      --accent: #22c55e;
-      --danger: #f97373;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", sans-serif;
-    }
-
     body {
-      background: radial-gradient(circle at top, #0ea5e9 0, #020617 40%);
-      min-height: 100vh;
+      background: radial-gradient(circle at top, #043b61, #020b16 50%, #000000 100%);
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    #container {
+      max-width: 900px;
+      margin: 80px auto;
+      padding: 30px;
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 35px rgba(0,0,0,0.6);
+    }
+
+    #header {
       display: flex;
       align-items: center;
+      margin-bottom: 15px;
+    }
+
+    #avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #0d74ff;
+      display: flex;
       justify-content: center;
-      padding: 24px;
-      color: var(--fg);
-    }
-
-    #kai-root {
-      width: 100%;
-      max-width: 1120px;
-    }
-
-    .kai-card {
-      background: radial-gradient(
-            circle at top left,
-            rgba(56, 189, 248, 0.21),
-            transparent 59%
-          ),
-        radial-gradient(
-            circle at top right,
-            rgba(59, 130, 246, 0.28),
-            transparent 52%
-          ),
-        #020617;
-      border-radius: 28px;
-      padding: 28px 28px 24px;
-      box-shadow: 0 40px 80px rgba(15, 23, 42, 0.9),
-        inset 0 0 0 1px rgba(148, 163, 184, 0.25);
-      display: flex;
-      flex-direction: row;
-      gap: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .kai-card::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background: radial-gradient(
-          circle at top left,
-          rgba(56, 189, 248, 0.12),
-          transparent 55%
-        ),
-        radial-gradient(
-          circle at -20% 120%,
-          rgba(8, 47, 73, 0.3),
-          transparent 50%
-        );
-      opacity: 0.8;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .kai-main {
-      flex: 2;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      z-index: 1;
-    }
-
-    .kai-sidebar {
-      flex: 1.05;
-      border-radius: 22px;
-      padding: 18px 18px 16px;
-      margin-left: 4px;
-      background: linear-gradient(
-          135deg,
-          rgba(15, 23, 42, 0.82),
-          rgba(15, 23, 42, 0.98)
-        );
-      border: 1px solid rgba(148, 163, 184, 0.32);
-      box-shadow: 0 22px 36px rgba(15, 23, 42, 0.9),
-        inset 0 0 0 1px rgba(148, 163, 184, 0.08);
-      backdrop-filter: blur(18px);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .kai-header {
-      display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 18px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
-      position: relative;
-      z-index: 1;
+      font-size: 35px;
+      margin-right: 15px;
     }
 
-    .kai-avatar-wrapper {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    #status {
+      font-size: 14px;
+      color: #70f3a0;
     }
 
-    .kai-avatar-ring {
-      position: absolute;
-      width: 56px;
-      height: 56px;
-      border-radius: 999px;
-      border: 2px solid rgba(56, 189, 248, 0.45);
-      box-shadow: 0 0 40px rgba(56, 189, 248, 0.55);
-      opacity: 0.85;
-      animation: kaiGlow 3s ease-in-out infinite;
-      z-index: 0;
+    #messages {
+      height: 340px;
+      overflow-y: auto;
+      padding-right: 10px;
+      border-radius: 10px;
     }
 
-    .kai-avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 999px;
-      background: conic-gradient(
-        from 210deg,
-        #0ea5e9,
-        #38bdf8,
-        #22c55e,
-        #0ea5e9
-      );
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 20px 35px rgba(15, 23, 42, 0.65),
-        0 0 0 2px rgba(15, 23, 42, 0.75);
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
-    }
-
-    .kai-avatar-inner {
-      width: 48px;
-      height: 48px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #e5e7eb, #111827 70%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .kai-avatar-face {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 40% 20%, #f9fafb, #111827 75%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 16px rgba(15, 23, 42, 0.6);
-      position: relative;
-    }
-
-    .kai-avatar-eyes {
-      position: absolute;
-      top: 9px;
-      left: 8px;
-      right: 8px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .kai-avatar-eye {
-      width: 4.6px;
-      height: 4.6px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 30%, #f9fafb, #020617 70%);
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
-    }
-
-    .kai-avatar-mouth {
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      width: 10px;
-      height: 6px;
-      margin-left: -5px;
-      border-radius: 999px;
-      border-bottom: 2px solid rgba(15, 23, 42, 0.9);
-      opacity: 0.9;
-    }
-
-    .kai-avatar-talking .kai-avatar {
-      animation: kaiTalkBounce 0.68s ease-in-out infinite;
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.9),
-        0 0 50px rgba(56, 189, 248, 0.98);
-    }
-
-    .kai-avatar-talking .kai-avatar-ring {
-      animation: kaiGlowFast 1.4s ease-in-out infinite;
-      border-color: rgba(56, 189, 248, 0.95);
-      opacity: 1;
-    }
-
-    .kai-avatar-talking .kai-avatar-mouth {
-      border-bottom-width: 3px;
-      height: 7px;
-    }
-
-    .kai-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .kai-title-pill {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(34, 197, 94, 0.15);
-      color: #bbf7d0;
-      border: 1px solid rgba(34, 197, 94, 0.5);
-    }
-
-    .kai-subtitle {
-      font-size: 0.85rem;
-      color: rgba(209, 213, 219, 0.9);
-      max-width: 480px;
+    .bubble {
+      max-width: 76%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      margin: 8px 0;
       line-height: 1.4;
+      animation: fadeIn 0.2s ease;
     }
 
-    .kai-badge-row {
-      margin-top: 10px;
+    .assistant {
+      background: rgba(0, 110, 255, 0.27);
+      border: 1px solid rgba(255,255,255,0.12);
+      margin-right: auto;
+    }
+
+    .user {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.12);
+      margin-left: auto;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #inputRow {
+      margin-top: 25px;
       display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .kai-badge {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      color: rgba(209, 213, 219, 0.86);
-      background: radial-gradient(circle at top, rgba(31, 41, 55, 0.9), #020617);
-    }
-
-    .kai-badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
-    }
-
-    .kai-badge-text {
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(209, 213, 219, 0.9);
-    }
-
-    .kai-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.74rem;
-      color: rgba(148, 163, 184, 0.9);
-      margin-top: 2px;
-    }
-
-    .kai-status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
-    }
-
-    .kai-status-dot.kai-status-thinking {
-      background: #facc15;
-      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.35);
-    }
-
-    .kai-status-dot.kai-status-error {
-      background: #ef4444;
-      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.4);
-    }
-
-    .kai-status-label {
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      font-weight: 500;
-    }
-
-    .kai-status-detail {
-      opacity: 0.9;
-    }
-
-    .kai-chat {
+    #inputBox {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      border-radius: 20px;
-      padding: 14px 14px 12px;
-      background: radial-gradient(
-            circle at top,
-            rgba(15, 23, 42, 0.95),
-            rgba(2, 6, 23, 0.98)
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    #sendBtn {
+      padding: 12px 20px;
+      margin-left: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #0d74ff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <div id="header">
+      <div id="avatar">🙂</div>
+      <div>
+        <div style="font-size:20px;font-weight:bold;">Aero – Your AI Project Coach</div>
+        <div id="status">Ready</div>
+      </div>
+    </div>
+
+    <div id="messages"></div>
+
+    <div id="inputRow">
+      <input id="inputBox" placeholder="Describe your project or ask Aero anything…" />
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // ----------------------------
+    // CONFIG
+    // ----------------------------
+    const BACKEND_URL = "https://projectpilot-backend-zkad.onrender.com/api/chat";
+
+    const messagesEl = document.getElementById("messages");
+    const inputBox = document.getElementById("inputBox");
+    const sendBtn = document.getElementById("sendBtn");
+    const statusEl = document.getElementById("status");
+    const avatarEl = document.getElementById("avatar");
+
+    function addMessage(text, sender) {
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + sender;
+      bubble.innerText = text;
+      messagesEl.appendChild(bubble);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const text = inputBox.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      inputBox.value = "";
+
+      statusEl.textContent = "Thinking…";
+      avatarEl.textContent = "💭";
+
+      try {
+        const res = await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+
+        if (!res.ok) {
+          addMessage("Server error: " + res.status, "assistant");
+          return;
+        }
+
+        const data = await res.json();
+
+        // TEXT RESPONSE
+        if (data.reply) {
+          addMessage(data.reply, "assistant");
+        }
+
+        // AUDIO if included
+        if (data.audioBase64) {
+          const audio = new Audio("data:audio/mp3;base64," + data.audioBase64);
+          audio.play();
+        }
+
+      } catch (err) {
+        addMessage("Could not reach ProjectPilot server.", "assistant");
+        console.error(err);
+      }
+
+      statusEl.textContent = "Ready";
+      avatarEl.textContent = "🙂";
+    }
+
+    sendBtn.onclick = sendMessage;
+    inputBox.addEventListener("keydown", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+
+</body>
+</html>
