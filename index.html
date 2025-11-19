@@ -647,10 +647,19 @@ Help me identify project risks for a ${type} project.
             micDot.classList.remove("active");
             micLabel.textContent = "Talk";
           };
-          recognition.onresult = function (event) {
-            const transcript = event.results[0][0].transcript;
-            inputEl.value = transcript;
-          };
+         recognition.onresult = function (event) {
+  const transcript = event.results[0][0].transcript;
+
+  // Put text in the box (so the user can still see it)
+  inputEl.value = transcript;
+
+  // Immediately send it as a message
+  if (transcript && transcript.trim()) {
+    appendBubble(transcript.trim(), "user");
+    callBackend(transcript.trim());
+  }
+};
+
           recognition.onerror = function (event) {
             console.error("Speech recognition error:", event.error);
           };
@@ -674,3 +683,4 @@ Help me identify project risks for a ${type} project.
     </script>
   </body>
 </html>
+
