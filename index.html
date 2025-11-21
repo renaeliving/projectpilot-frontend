@@ -41,80 +41,45 @@
     }
 
     .kai-avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 30%, #38bdf8, #1d4ed8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow: 0 12px 20px rgba(15, 23, 42, 0.8);
-      animation: kai-idle-bob 3s ease-in-out infinite;
-      flex-shrink: 0;
-    }
+  width: 86px;
+  height: 86px;
+  border-radius: 999px;
+  overflow: hidden;   /* keeps big images cropped to circle */
+  border: 2px solid #38bdf8;
+  padding: 3px;
+  background: radial-gradient(circle at 30% 30%, #0f172a, #020617);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.9);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  flex-shrink: 0;
+}
+.kai-avatar-img {
+  width: 100%;        /* match container width */
+  height: 100%;       /* match container height */
+  object-fit: cover;  /* crop to fill circle */
+  border-radius: 999px;
+  filter: saturate(1.05);
+}
+@keyframes kai-avatar-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
 
-    .kai-face {
-      width: 46px;
-      height: 46px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      position: relative;
-    }
+.kai-avatar {
+  animation: kai-avatar-idle 4s ease-in-out infinite;
+}
 
-    .kai-eye {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #e5e7eb;
-      position: absolute;
-      top: 14px;
-    }
+.kai-avatar.talking {
+  animation: kai-avatar-idle 0.7s ease-in-out infinite;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25),
+              0 18px 40px rgba(8, 47, 73, 0.9);
+  border-color: #f97316;
+}
 
-    .kai-eye-left { left: 11px; }
-    .kai-eye-right { right: 11px; }
 
-    .kai-mouth {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      width: 20px;
-      height: 10px;
-      margin-left: -10px;
-      border-radius: 0 0 18px 18px;
-      border-bottom: 2px solid #e5e7eb;
-    }
-
-    @keyframes kai-idle-bob {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-
-    .kai-avatar.talking {
-      animation: kai-talk-bob 0.6s ease-in-out infinite;
-    }
-
-    @keyframes kai-talk-bob {
-      0%, 100% { transform: translateY(-1px); }
-      50% { transform: translateY(-5px); }
-    }
-
-    .kai-avatar.talking .kai-mouth {
-      animation: kai-mouth-talk 0.25s ease-in-out infinite;
-    }
-
-    @keyframes kai-mouth-talk {
-      0%, 100% {
-        height: 4px;
-        border-bottom-width: 2px;
-      }
-      50% {
-        height: 14px;
-        border-bottom-width: 0;
-        background: #e11d48;
-        border-radius: 999px;
-      }
-    }
 
     .kai-title {
       margin: 0;
@@ -646,6 +611,7 @@ Help me identify project risks for a ${type} project.
   </script>
 </body>
 </html>
+
 
 
 
