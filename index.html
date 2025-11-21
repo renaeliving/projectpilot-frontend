@@ -444,33 +444,79 @@
         statusText.textContent = isLoading ? "Thinking…" : "Ready";
       }
 
-      async function callBackend(userMessage) {
-        if (!BACKEND_URL.includes("http")) {
-          appendBubble("Backend URL is not configured yet. Ask your admin to update BACKEND_URL.", "assistant");
-          return;
-        }
-        setLoading(true);
-        try {
-          const res = await fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userMessage }),
-          });
-          if (!res.ok) {
-            const text = await res.text();
-            throw new Error(text || res.statusText);
-          }
-          const data = await res.json();
-          const reply = (data.reply || "").trim() || "I’m not sure how to respond to that.";
-          appendBubble(reply, "assistant");
-          speakText(reply);
-        } catch (err) {
-          appendBubble("There was an error contacting the ProjectPilot server. Please try again in a moment.", "assistant");
-          console.error(err);
-        } finally {
-          setLoading(false);
-        }
-      }
+     async function callBackend(userMessage) {
+  if (!BACKEND_URL.includes("http")) {
+    appendBubble("Backend URL is not configured yet. Ask your admin to update BACKEND_URL.", "assistant");
+    return;
+  }
+  setLoading(true);
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMessage }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || res.statusText);
+    }
+
+    const data = await res.json();
+    const reply =
+      (data.reply || "").trim() || "I’m not sure how to respond to that.";
+    const audioBase64 = data.audioBase64 || null;
+
+    appendBubble(reply, "assistant");
+
+    // Prefer ElevenLabs audio if we got it, otherwise fall back to browser TTS
+    if (audioBase64) {
+      playAeroAudio(audioBase64, reply);
+    } else {
+      speakText(reply);
+    }
+    function playAeroAudio(audioBase64, textFallback) {
+  try {
+    const audio = new Audio("data:audio/mpeg;base64," + audioBase64);
+
+    audio.addEventListener("play", () => {
+      if (avatarEl) avatarEl.classList.add("talking");
+    });
+
+    const clearTalking = () => {
+      if (avatarEl) avatarEl.classList.remove("talking");
+    };
+
+    audio.addEventListener("ended", clearTalking);
+    audio.addEventListener("pause", clearTalking);
+    audio.addEventListener("error", () => {
+      clearTalking();
+      // If audio fails for any reason, still read the text out loud
+      speakText(textFallback);
+    });
+
+    audio.play().catch((err) => {
+      console.error("Error playing ElevenLabs audio:", err);
+      clearTalking();
+      speakText(textFallback);
+    });
+  } catch (err) {
+    console.error("Error setting up ElevenLabs audio:", err);
+    if (avatarEl) avatarEl.classList.remove("talking");
+    speakText(textFallback);
+  }
+}
+
+  } catch (err) {
+    appendBubble(
+      "There was an error contacting the ProjectPilot server. Please try again in a moment.",
+      "assistant"
+    );
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+}
+
 
       formEl.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -597,4 +643,5 @@ Help me identify project risks for a ${type} project.
   </script>
 </body>
 </html>
+
 
