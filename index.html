@@ -33,29 +33,31 @@
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
     }
 
-    .kai-header {
+.kai-header {
       display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 10px;
+      align-items: stretch;
+      gap: 18px;
+      margin-bottom: 16px;
     }
 
-    .kai-avatar {
-  width: 86px;
-  height: 86px;
-  border-radius: 999px;
-  overflow: hidden;   /* keeps big images cropped to circle */
-  border: 2px solid #38bdf8;
-  padding: 3px;
-  background: radial-gradient(circle at 30% 30%, #0f172a, #020617);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.9);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  flex-shrink: 0;
+
+  /* Aero's portrait frame */
+.kai-avatar {
+      width: 230px;              /* bigger: shoulder-up portrait */
+      height: 150px;
+      border-radius: 18px;
+      overflow: hidden;          /* crops the large image nicely */
+      border: 2px solid #38bdf8;
+      background: radial-gradient(circle at 30% 30%, #0f172a, #020617);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.85);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      flex-shrink: 0;
 }
+
 .kai-avatar-img {
   width: 100%;        /* match container width */
   height: 100%;       /* match container height */
@@ -291,21 +293,22 @@
 
       root.innerHTML = `
         <div class="kai-card">
-         <div class="kai-header">
-  <div class="kai-avatar" id="kai-avatar">
-    <img
-      src="https://static.wixstatic.com/media/3cf059_8ea281ce3ec3479cb9c0e84121468cf3~mv2.png"
-      alt="Aero, your AI project coach"
-      class="kai-avatar-img"
-    />
-  </div>
-  <div>
-    <h2 class="kai-title">Aero – Your AI Project Coach</h2>
-    <p class="kai-subtitle">
-      Speak or type to get help with schedules, risks, and “what should I do next” on your projects.
-    </p>
-  </div>
-</div>
+        <div class="kai-header">
+            <div class="kai-avatar" id="kai-avatar">
+              <img
+                src="https://static.wixstatic.com/media/3cf059_8ea281ce3ec3479cb9c0e84121468cf3~mv2.png"
+                alt="Aero, your AI project coach"
+                class="kai-avatar-img"
+              />
+            </div>
+            <div>
+              <h2 class="kai-title">Aero – Your AI Project Coach</h2>
+              <p class="kai-subtitle">
+                I’m here as your friendly PM mentor. Tell me what’s going on, and we’ll figure out the next right step together.
+              </p>
+            </div>
+          </div>
+
 
 
           <div class="kai-layout">
@@ -611,6 +614,7 @@ Help me identify project risks for a ${type} project.
   </script>
 </body>
 </html>
+
 
 
 
