@@ -5,10 +5,15 @@
   <title>Aero – Your AI Project Coach</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    :root {
+      color-scheme: dark;
+    }
+
     body {
       margin: 0;
       padding: 0;
-      background: radial-gradient(circle at top, #0ea5e9 0, #020617 40%, #000 100%);
+      /* Gradient to match your current window background */
+      background: radial-gradient(circle at top, #0ea5e9 0, #020617 45%, #000 100%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: #e5e7eb;
       min-height: 100vh;
@@ -19,112 +24,160 @@
 
     #kai-root {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1120px;
+      margin: 32px auto;
       padding: 16px;
     }
 
-    .kai-card {
-      max-width: 900px;
-      margin: 0 auto;
-      background: #020617;
-      border-radius: 18px;
-      border: 1px solid #1f2937;
-      padding: 18px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
-    }
-
-.kai-header {
-      display: flex;
-      align-items: stretch;
-      gap: 18px;
-      margin-bottom: 16px;
-    }
-
-
-  /* Aero's portrait frame */
-.kai-avatar {
-      width: 230px;              /* bigger: shoulder-up portrait */
-      height: 150px;
-      border-radius: 18px;
-      overflow: hidden;          /* crops the large image nicely */
-      border: 2px solid #38bdf8;
-      background: radial-gradient(circle at 30% 30%, #0f172a, #020617);
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      position: relative;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.85);
-      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-      flex-shrink: 0;
-}
-
-.kai-avatar-img {
-  width: 100%;        /* match container width */
-  height: 100%;       /* match container height */
-  object-fit: cover;  /* crop to fill circle */
-  border-radius: 999px;
-  filter: saturate(1.05);
-}
-@keyframes kai-avatar-idle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
-}
-
-.kai-avatar {
-  animation: kai-avatar-idle 4s ease-in-out infinite;
-}
-
-.kai-avatar.talking {
-  animation: kai-avatar-idle 0.7s ease-in-out infinite;
-  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25),
-              0 18px 40px rgba(8, 47, 73, 0.9);
-  border-color: #f97316;
-}
-
-
-
-    .kai-title {
-      margin: 0;
-      font-size: 1.2rem;
-      color: #f9fafb;
-    }
-
-    .kai-subtitle {
-      margin: 2px 0 0;
-      font-size: 0.85rem;
-      color: #9ca3af;
-    }
-
-    .kai-layout {
+    /* 40–50% Aero, 50–60% chat */
+    .aero-shell {
       display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.3fr);
-      gap: 12px;
+      grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
+      gap: 32px;
+      align-items: stretch;
     }
 
-    @media (max-width: 768px) {
-      .kai-layout {
+    @media (max-width: 920px) {
+      .aero-shell {
         grid-template-columns: 1fr;
       }
     }
 
-    .kai-chat {
-      background: #020617;
-      border-radius: 12px;
-      border: 1px solid #1f2937;
-      padding: 10px;
+    /* LEFT: Aero */
+    .aero-left {
       display: flex;
       flex-direction: column;
-      min-height: 260px;
+      gap: 18px;
+    }
+
+    .aero-portrait-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 2px solid rgba(56, 189, 248, 0.85);
+      box-shadow:
+        0 24px 60px rgba(15, 23, 42, 0.95),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      background: radial-gradient(circle at top, #0ea5e9 0, #020617 60%);
+      transform-origin: center;
+      animation: aero-idle 6s ease-in-out infinite;
+    }
+
+    .aero-portrait-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.05);
+    }
+
+    .aero-glow {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 0, rgba(56, 189, 248, 0.4), transparent 55%);
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .aero-left h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      letter-spacing: 0.03em;
+    }
+
+    .aero-left p {
+      margin: 4px 0 0;
+      font-size: 0.95rem;
+      color: #9ca3af;
+      max-width: 26rem;
+    }
+
+    /* Stronger animation state when Aero is “talking” */
+    .aero-avatar-talking {
+      animation: aero-talking 0.7s ease-in-out infinite;
+      box-shadow:
+        0 0 0 2px rgba(56, 189, 248, 0.6),
+        0 32px 80px rgba(8, 47, 73, 1);
+      border-color: #f97316;
+    }
+
+    @keyframes aero-idle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    @keyframes aero-talking {
+      0%, 100% { transform: translateY(-2px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* RIGHT: Chat panel */
+    .aero-chat-shell {
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 20px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      min-height: 380px;
+    }
+
+    .kai-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .kai-header-title {
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .kai-header-sub {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    .kai-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #022c22;
+      border: 1px solid #059669;
+      font-size: 0.75rem;
+      color: #bbf7d0;
+    }
+
+    .kai-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .kai-chat {
+      border-radius: 12px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
 
     .kai-messages {
       flex: 1;
       overflow-y: auto;
-      max-height: 380px;
+      max-height: 420px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      padding-right: 4px;
+      padding: 8px 4px 8px;
     }
 
     .kai-bubble {
@@ -158,7 +211,7 @@
     .kai-form {
       border-top: 1px solid #111827;
       padding-top: 6px;
-      margin-top: 8px;
+      margin-top: 4px;
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -166,12 +219,12 @@
 
     .kai-input {
       width: 100%;
-      min-height: 60px;
+      min-height: 64px;
       resize: vertical;
       background: #020617;
-      border-radius: 8px;
+      border-radius: 10px;
       border: 1px solid #1f2937;
-      padding: 7px 9px;
+      padding: 8px 10px;
       color: #e5e7eb;
       font-size: 0.9rem;
     }
@@ -194,13 +247,6 @@
       gap: 6px;
       font-size: 0.78rem;
       color: #9ca3af;
-    }
-
-    .kai-status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #22c55e;
     }
 
     .kai-btn {
@@ -238,88 +284,59 @@
       background: #ef4444;
       box-shadow: 0 0 8px rgba(239, 68, 68, 0.9);
     }
-
-    .kai-tools {
-      background: #020617;
-      border-radius: 12px;
-      border: 1px solid #1f2937;
-      padding: 10px;
-      font-size: 0.85rem;
-    }
-
-    .kai-tools h3 {
-      margin: 0 0 6px;
-      font-size: 0.95rem;
-    }
-
-    .kai-field {
-      margin-bottom: 6px;
-    }
-
-    .kai-field label {
-      display: block;
-      font-size: 0.78rem;
-      color: #9ca3af;
-      margin-bottom: 2px;
-    }
-
-    .kai-field input,
-    .kai-field select {
-      width: 100%;
-      padding: 6px 7px;
-      font-size: 0.8rem;
-      border-radius: 6px;
-      border: 1px solid #111827;
-      background: #020617;
-      color: #e5e7eb;
-    }
-
-    .kai-note {
-      font-size: 0.75rem;
-      color: #6b7280;
-      margin-top: 6px;
-    }
   </style>
 </head>
 <body>
   <div id="kai-root"></div>
-
   <script>
     (function () {
-      // TODO: confirm this matches your backend URL
-      const BACKEND_URL = "https://projectpilot-backend-zkad.onrender.com/api/chat";
+      const BACKEND_URL = "https://projectpilot-backend-zkad.onrender.com";
 
       const root = document.getElementById("kai-root");
 
       root.innerHTML = `
-        <div class="kai-card">
-        <div class="kai-header">
-            <div class="kai-avatar" id="kai-avatar">
+        <div class="aero-shell">
+          <section class="aero-left">
+            <div class="aero-portrait-frame" id="kai-avatar">
               <img
                 src="https://static.wixstatic.com/media/3cf059_8ea281ce3ec3479cb9c0e84121468cf3~mv2.png"
                 alt="Aero, your AI project coach"
-                class="kai-avatar-img"
+                class="aero-portrait-img"
               />
+              <div class="aero-glow"></div>
             </div>
             <div>
-              <h2 class="kai-title">Aero – Your AI Project Coach</h2>
-              <p class="kai-subtitle">
-                I’m here as your friendly PM mentor. Tell me what’s going on, and we’ll figure out the next right step together.
+              <h1>Meet Aero, your project coach</h1>
+              <p>
+                Think of me as your friendly PM mentor. Whenever you’re unsure what’s going on
+                or what to do next, just talk to me and we’ll figure it out together.
               </p>
             </div>
-          </div>
+          </section>
 
+          <section class="aero-chat-shell">
+            <header class="kai-header-bar">
+              <div>
+                <div class="kai-header-title">Aero – AI Project Coach</div>
+                <div class="kai-header-sub" id="kai-status-text">Ready</div>
+              </div>
+              <div class="kai-status-pill">
+                <div class="kai-status-dot"></div>
+                Live mentor mode
+              </div>
+            </header>
 
-
-          <div class="kai-layout">
-            <section class="kai-chat">
+            <div class="kai-chat">
               <div id="kai-messages" class="kai-messages"></div>
               <form id="kai-form" class="kai-form">
-                <textarea id="kai-input" class="kai-input" placeholder="Describe your project or ask a question..."></textarea>
+                <textarea
+                  id="kai-input"
+                  class="kai-input"
+                  placeholder="Tell me what’s going on in your project, or ask me a question..."
+                ></textarea>
                 <div class="kai-controls">
                   <div class="kai-controls-left">
-                    <div class="kai-status-dot"></div>
-                    <span id="kai-status-text">Ready</span>
+                    <span>Press “Talk” to speak, or type and hit Send.</span>
                   </div>
                   <div style="display:flex; gap:6px; align-items:center;">
                     <button type="button" class="kai-btn secondary" id="kai-mic-btn">
@@ -330,44 +347,8 @@
                   </div>
                 </div>
               </form>
-            </section>
-
-            <aside class="kai-tools">
-              <h3>Quick project helpers</h3>
-              <div class="kai-field">
-                <label for="kai-project-type">Project type</label>
-                <select id="kai-project-type">
-                  <option value="SaaS implementation">SaaS implementation</option>
-                  <option value="Data center / infrastructure">Data center / infrastructure</option>
-                  <option value="Internal process improvement">Internal process improvement</option>
-                  <option value="Construction / facilities">Construction / facilities</option>
-                  <option value="Other">Other / not listed</option>
-                </select>
-              </div>
-              <div class="kai-field">
-                <label for="kai-duration">Rough duration</label>
-                <select id="kai-duration">
-                  <option value="8 weeks">8 weeks</option>
-                  <option value="3 months">3 months</option>
-                  <option value="6 months" selected>6 months</option>
-                  <option value="12 months">12 months</option>
-                </select>
-              </div>
-              <div class="kai-field">
-                <label for="kai-team">Who is involved?</label>
-                <input id="kai-team" placeholder="IT, Facilities, vendor, local sites..." />
-              </div>
-              <button type="button" class="kai-btn secondary" id="kai-schedule-btn" style="margin-bottom:4px;">
-                🗓️ Generate starter schedule
-              </button>
-              <button type="button" class="kai-btn secondary" id="kai-risks-btn">
-                ⚠️ Help me identify risks
-              </button>
-              <p class="kai-note">
-                Aero is for guidance only and doesn’t replace your organization’s PM standards or approvals.
-              </p>
-            </aside>
-          </div>
+            </div>
+          </section>
         </div>
       `;
 
@@ -381,9 +362,6 @@
       const micBtn = document.getElementById("kai-mic-btn");
       const micDot = document.getElementById("kai-mic-dot");
       const micLabel = document.getElementById("kai-mic-label");
-
-      const scheduleBtn = document.getElementById("kai-schedule-btn");
-      const risksBtn = document.getElementById("kai-risks-btn");
 
       function appendBubble(text, role) {
         const wrapper = document.createElement("div");
@@ -415,79 +393,46 @@
         statusText.textContent = isLoading ? "Thinking…" : "Ready";
       }
 
-     async function callBackend(userMessage) {
-  if (!BACKEND_URL.includes("http")) {
-    appendBubble("Backend URL is not configured yet. Ask your admin to update BACKEND_URL.", "assistant");
-    return;
-  }
-  setLoading(true);
-  try {
-    const res = await fetch(BACKEND_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMessage }),
-    });
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || res.statusText);
-    }
+      async function callBackend(userMessage) {
+        if (!BACKEND_URL.includes("http")) {
+          appendBubble(
+            "Backend URL is not configured yet. Ask your admin to update BACKEND_URL in the widget code.",
+            "assistant"
+          );
+          return;
+        }
 
-    const data = await res.json();
-    const reply =
-      (data.reply || "").trim() || "I’m not sure how to respond to that.";
-    const audioBase64 = data.audioBase64 || null;
+        setLoading(true);
+        try {
+          const res = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userMessage }),
+          });
 
-    appendBubble(reply, "assistant");
+          if (!res.ok) {
+            const text = await res.text();
+            console.error("Backend error:", text);
+            throw new Error(text || res.statusText);
+          }
 
-    // Prefer ElevenLabs audio if we got it, otherwise fall back to browser TTS
-    if (audioBase64) {
-      playAeroAudio(audioBase64, reply);
-    } else {
-      speakText(reply);
-    }
-    function playAeroAudio(audioBase64, textFallback) {
-  try {
-    const audio = new Audio("data:audio/mpeg;base64," + audioBase64);
+          const data = await res.json();
+          const reply =
+            (data.reply || "").trim() ||
+            "I’m not sure how to respond to that, but tell me a bit more.";
 
-    audio.addEventListener("play", () => {
-      if (avatarEl) avatarEl.classList.add("talking");
-    });
-
-    const clearTalking = () => {
-      if (avatarEl) avatarEl.classList.remove("talking");
-    };
-
-    audio.addEventListener("ended", clearTalking);
-    audio.addEventListener("pause", clearTalking);
-    audio.addEventListener("error", () => {
-      clearTalking();
-      // If audio fails for any reason, still read the text out loud
-      speakText(textFallback);
-    });
-
-    audio.play().catch((err) => {
-      console.error("Error playing ElevenLabs audio:", err);
-      clearTalking();
-      speakText(textFallback);
-    });
-  } catch (err) {
-    console.error("Error setting up ElevenLabs audio:", err);
-    if (avatarEl) avatarEl.classList.remove("talking");
-    speakText(textFallback);
-  }
-}
-
-  } catch (err) {
-    appendBubble(
-      "There was an error contacting the ProjectPilot server. Please try again in a moment.",
-      "assistant"
-    );
-    console.error(err);
-  } finally {
-    setLoading(false);
-  }
-}
-
+          appendBubble(reply, "assistant");
+          speakWithAeroVoice(reply);
+        } catch (err) {
+          console.error(err);
+          appendBubble(
+            "There was an error contacting the ProjectPilot server. Please try again in a moment.",
+            "assistant"
+          );
+        } finally {
+          setLoading(false);
+        }
+      }
 
       formEl.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -498,75 +443,42 @@
         callBackend(text);
       });
 
-      scheduleBtn.addEventListener("click", function () {
-        const type = document.getElementById("kai-project-type").value;
-        const duration = document.getElementById("kai-duration").value;
-        const team = document.getElementById("kai-team").value || "mixed internal and vendor team";
+      /* SPEECH OUTPUT
+         ElevenLabs audio already comes from your backend.
+         This browser speech is a *backup* and also drives the
+         little “Aero is talking” animation around his portrait.
+      */
+      function speakWithAeroVoice(text) {
+        // If you want ONLY ElevenLabs audio and no browser voice, uncomment:
+        // return;
 
-        const prompt = `
-Please act as a project management coach and create a starter high-level schedule.
-
-Project type: ${type}
-Rough duration: ${duration}
-Teams / roles involved: ${team}
-
-1. Ask me up to 3 clarifying questions if needed.
-2. Then provide a high-level schedule in a markdown table with columns:
-| # | Task | Owner | Duration | Dependencies | Notes |
-3. Group tasks loosely into phases (Discovery, Design, Build, Test, Deploy).
-4. Keep it under about 20 tasks for now so it's not overwhelming.
-`.trim();
-
-        appendBubble("(Quick tool) Generate a starter schedule for my project based on the info I entered.", "user");
-        callBackend(prompt);
-      });
-
-      risksBtn.addEventListener("click", function () {
-        const type = document.getElementById("kai-project-type").value;
-        const prompt = `
-Help me identify project risks for a ${type} project.
-
-1. Ask me 2–3 questions to understand context (budget, timeline pressure, dependencies).
-2. Then produce a simple risk register in markdown with columns:
-| ID | Risk | Likelihood | Impact | Mitigation / response | Owner |
-3. Give at least 8 example risks tailored to this type of project.
-`.trim();
-
-        appendBubble("(Quick tool) Help me identify key project risks.", "user");
-        callBackend(prompt);
-      });
-
-      // ---- SPEECH: OUTPUT (ElevenLabs audio is generated server-side) ----
-      function speakText(text) {
-        // In the current setup audio is handled by ElevenLabs on the server,
-        // so we don't need browser TTS here. This is left as a fallback:
         if (!("speechSynthesis" in window)) return;
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
 
         utterance.onstart = function () {
-          if (avatarEl) avatarEl.classList.add("talking");
+          if (avatarEl) avatarEl.classList.add("aero-avatar-talking");
         };
         utterance.onend = function () {
-          if (avatarEl) avatarEl.classList.remove("talking");
+          if (avatarEl) avatarEl.classList.remove("aero-avatar-talking");
         };
         utterance.onerror = function () {
-          if (avatarEl) avatarEl.classList.remove("talking");
+          if (avatarEl) avatarEl.classList.remove("aero-avatar-talking");
         };
 
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
       }
 
-      // ---- SPEECH: INPUT (browser SpeechRecognition) ----
+      // SPEECH INPUT
       let recognition = null;
       let recognizing = false;
 
       function initSpeechRecognition() {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR) {
-          micLabel.textContent = "Voice input not supported in this browser";
+          micLabel.textContent = "No mic";
           micBtn.disabled = true;
           return;
         }
@@ -586,10 +498,8 @@ Help me identify project risks for a ${type} project.
           micLabel.textContent = "Talk";
         };
         recognition.onresult = function (event) {
-          const transcript = (event.results[0][0].transcript || "").trim();
-          if (!transcript) return;
-          appendBubble(transcript, "user");
-          callBackend(transcript);
+          const transcript = event.results[0][0].transcript;
+          inputEl.value = transcript;
         };
         recognition.onerror = function (event) {
           console.error("Speech recognition error:", event.error);
@@ -605,7 +515,7 @@ Help me identify project risks for a ${type} project.
         else recognition.start();
       });
 
-      // Initial welcome
+      // Initial welcome message
       appendBubble(
         "Hi, I’m Aero, your AI project coach. Tell me about your project and I’ll help you build a schedule, identify risks, or figure out what to do next.",
         "assistant"
@@ -614,8 +524,3 @@ Help me identify project risks for a ${type} project.
   </script>
 </body>
 </html>
-
-
-
-
-
