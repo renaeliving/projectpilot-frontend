@@ -26,49 +26,53 @@
       justify-content: center;
     }
 
-    #kai-root {
-      width: 100%;
-      max-width: 1100px;
-      padding: 16px;
-    }
+   #kai-root {
+  width: 100%;
+  max-width: 1300px;       /* let Aero get larger */
+  padding: 24px;
+}
 
-    /* ========= LAYOUT ========= */
+/* ========= LAYOUT ========= */
 
-    .aero-shell {
-      display: grid;
-      grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
-      gap: 32px;
-      background: var(--shell-bg);
-      border-radius: 24px;
-      border: 1px solid var(--border-soft);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
-      padding: 24px;
-    }
+.aero-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 0.5fr) minmax(0, 0.5fr); /* ~50/50 split */
+  gap: 40px;
+  background: transparent;   /* no big card */
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  align-items: center;
+}
 
-    @media (max-width: 900px) {
-      .aero-shell {
-        grid-template-columns: 1fr;
-      }
-    }
+@media (max-width: 900px) {
+  .aero-shell {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
 
-    .aero-left {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 18px;
-    }
+.aero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;  /* align to left, feels more natural */
+  gap: 18px;
+}
 
-    .aero-portrait {
-      width: 100%;
-      max-width: 420px;
-      border-radius: 28px;
-      overflow: hidden;
-      border: 1px solid #1f2937;
-      background: radial-gradient(circle at top, #0ea5e9 0, #020617 55%, #020617 100%);
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
-      position: relative;
-    }
+/* Aero photo – big and prominent, but still with glow */
+.aero-portrait {
+  width: 100%;
+  max-width: 520px;          /* make him bigger */
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid #1f2937;
+  background: radial-gradient(circle at top, #0ea5e9 0, #020617 55%, #020617 100%);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
+  position: relative;
+}
+
 
     .aero-portrait::before {
       content: "";
@@ -281,16 +285,15 @@
 
       root.innerHTML = `
         <div class="aero-shell">
-          <section class="aero-left">
-            <div class="aero-portrait" id="aero-portrait">
-              <img
-                src="https://static.wixstatic.com/media/3cf059_8ea281ce3ec3479cb9c0e84121468cf3~mv2.png"
-                alt="Aero – Your AI Project Coach"
-              />
-            </div>
-            <div>
-             
-          </section>
+        <section class="aero-left">
+  <div class="aero-portrait" id="aero-portrait">
+    <img
+      src="https://static.wixstatic.com/media/3cf059_8ea281ce3ec3479cb9c0e84121468cf3~mv2.png"
+      alt="Aero – Your AI Project Coach"
+    />
+  </div>
+</section>
+
 
           <section class="aero-chat-shell">
             <header class="aero-chat-header">
@@ -509,4 +512,5 @@
   </script>
 </body>
 </html>
+
 
