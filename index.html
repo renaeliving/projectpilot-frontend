@@ -337,6 +337,15 @@
       const micBtn = document.getElementById("kai-mic-btn");
       const micDot = document.getElementById("kai-mic-dot");
       const micLabel = document.getElementById("kai-mic-label");
+      // Simple browser-side memory
+let aeroUserName = localStorage.getItem("aeroUserName") || null;
+
+// Helper: personalize text with name if we know it
+function personalize(text) {
+  if (!aeroUserName) return text;
+  return text.replace(/\bfriend\b/gi, aeroUserName); // optional fun
+}
+
 
       function appendBubble(text, role) {
         const wrapper = document.createElement("div");
@@ -420,10 +429,17 @@
         }
         setLoading(true);
         try {
-          const res = await fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userMessage }),
+         const payload = {
+  message: userMessage,
+  userName: aeroUserName || null
+};
+
+const res = await fetch(BACKEND_URL, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload),
+});
+
           });
           if (!res.ok) {
             const text = await res.text();
@@ -450,14 +466,24 @@
       }
 
       // ---- FORM SUBMIT (text) ----
-      formEl.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const text = inputEl.value.trim();
-        if (!text) return;
-        appendBubble(text, "user");
-        inputEl.value = "";
-        callBackend(text);
-      });
+    formEl.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const text = inputEl.value.trim();
+  if (!text) return;
+  appendBubble(text, "user");
+  inputEl.value = "";
+
+  // If we don't know their name yet, treat this as their name
+  if (!aeroUserName) {
+    aeroUserName = text.split(" ")[0].replace(/[^a-zA-Z]/g, ""); // first word, clean
+    localStorage.setItem("aeroUserName", aeroUserName);
+    // Send a special message to backend to confirm & then move into project help
+    callBackend(`The user's name is ${aeroUserName}. Greet them and ask what project they want help with.`);
+  } else {
+    callBackend(text);
+  }
+});
+
 
       // ---- SPEECH INPUT ----
       let recognition = null;
@@ -504,13 +530,23 @@
       });
 
       // Initial welcome
-      appendBubble(
-        "Hi, I’m Aero, your AI project coach. Tell me about your project and I’ll help you build a schedule, identify risks, or figure out what to do next.",
-        "assistant"
+    if (!aeroUserName) {
+  appendBubble(
+    "Hi, I’m Aero, your AI project coach. Before we dive in – what should I call you?",
+    "assistant"
+  );
+} else {
+  appendBubble(
+    `Welcome back, ${aeroUserName}! What project are we working on today?`,
+    "assistant"
+  );
+}
+
       );
     })();
   </script>
 </body>
 </html>
+
 
 
