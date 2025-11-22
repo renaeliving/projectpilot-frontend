@@ -6,16 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      color-scheme: dark;
+      --shell-bg: rgba(15, 23, 42, 0.92);
+      --border-soft: #1f2937;
+      --accent: #0ea5e9;
+      --accent-strong: #38bdf8;
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
     }
 
     body {
       margin: 0;
       padding: 0;
-      /* Gradient to match your current window background */
-      background: radial-gradient(circle at top, #0ea5e9 0, #020617 45%, #000 100%);
+      background: radial-gradient(circle at top, #0ea5e9 0, #020617 40%, #000 100%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #e5e7eb;
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -24,134 +28,111 @@
 
     #kai-root {
       width: 100%;
-      max-width: 1120px;
-      margin: 32px auto;
+      max-width: 1100px;
       padding: 16px;
     }
 
-    /* 40–50% Aero, 50–60% chat */
+    /* ========= LAYOUT ========= */
+
     .aero-shell {
       display: grid;
       grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
       gap: 32px;
-      align-items: stretch;
+      background: var(--shell-bg);
+      border-radius: 24px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+      padding: 24px;
     }
 
-    @media (max-width: 920px) {
+    @media (max-width: 900px) {
       .aero-shell {
         grid-template-columns: 1fr;
       }
     }
 
-    /* LEFT: Aero */
     .aero-left {
       display: flex;
       flex-direction: column;
+      justify-content: center;
+      align-items: center;
       gap: 18px;
     }
 
-    .aero-portrait-frame {
-      position: relative;
+    .aero-portrait {
       width: 100%;
-      aspect-ratio: 4 / 3;
-      border-radius: 24px;
+      max-width: 420px;
+      border-radius: 28px;
       overflow: hidden;
-      border: 2px solid rgba(56, 189, 248, 0.85);
-      box-shadow:
-        0 24px 60px rgba(15, 23, 42, 0.95),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
-      background: radial-gradient(circle at top, #0ea5e9 0, #020617 60%);
-      transform-origin: center;
-      animation: aero-idle 6s ease-in-out infinite;
+      border: 1px solid #1f2937;
+      background: radial-gradient(circle at top, #0ea5e9 0, #020617 55%, #020617 100%);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
+      position: relative;
     }
 
-    .aero-portrait-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: saturate(1.05);
-    }
-
-    .aero-glow {
+    .aero-portrait::before {
+      content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 20% 0, rgba(56, 189, 248, 0.4), transparent 55%);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 60%);
       pointer-events: none;
-      mix-blend-mode: screen;
     }
 
-    .aero-left h1 {
-      margin: 0;
+    .aero-portrait img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    /* soft glow while talking */
+    .aero-portrait.aero-talking {
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.9);
+      border-color: var(--accent-strong);
+    }
+
+    .aero-name {
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+
+    .aero-title-main {
       font-size: 1.6rem;
-      letter-spacing: 0.03em;
+      font-weight: 600;
+      margin: 4px 0 0;
+      color: #f9fafb;
     }
 
-    .aero-left p {
-      margin: 4px 0 0;
-      font-size: 0.95rem;
-      color: #9ca3af;
+    .aero-tagline {
+      margin: 6px 0 0;
+      font-size: 0.9rem;
+      color: var(--text-soft);
       max-width: 26rem;
     }
 
-    /* Stronger animation state when Aero is “talking” */
-    .aero-avatar-talking {
-      animation: aero-talking 0.7s ease-in-out infinite;
-      box-shadow:
-        0 0 0 2px rgba(56, 189, 248, 0.6),
-        0 32px 80px rgba(8, 47, 73, 1);
-      border-color: #f97316;
-    }
+    /* ========= CHAT PANEL ========= */
 
-    @keyframes aero-idle {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-
-    @keyframes aero-talking {
-      0%, 100% { transform: translateY(-2px); }
-      50% { transform: translateY(-8px); }
-    }
-
-    /* RIGHT: Chat panel */
     .aero-chat-shell {
-      background: rgba(15, 23, 42, 0.96);
-      border-radius: 20px;
-      border: 1px solid #1f2937;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-      padding: 14px;
       display: flex;
       flex-direction: column;
-      min-height: 380px;
+      gap: 10px;
     }
 
-    .kai-header-bar {
+    .aero-chat-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
+      align-items: flex-start;
+      gap: 12px;
     }
 
-    .kai-header-title {
-      font-size: 0.95rem;
-      font-weight: 500;
-    }
-
-    .kai-header-sub {
-      font-size: 0.75rem;
-      color: #9ca3af;
-    }
-
-    .kai-status-pill {
-      display: inline-flex;
+    .aero-status {
+      display: flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: #022c22;
-      border: 1px solid #059669;
-      font-size: 0.75rem;
-      color: #bbf7d0;
+      font-size: 0.8rem;
+      color: var(--text-soft);
     }
 
     .kai-status-dot {
@@ -159,25 +140,27 @@
       height: 8px;
       border-radius: 999px;
       background: #22c55e;
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.9);
     }
 
     .kai-chat {
-      border-radius: 12px;
-      padding: 0;
+      background: #020617;
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      flex: 1;
+      min-height: 260px;
     }
 
     .kai-messages {
       flex: 1;
       overflow-y: auto;
-      max-height: 420px;
+      max-height: 380px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      padding: 8px 4px 8px;
+      padding-right: 4px;
     }
 
     .kai-bubble {
@@ -211,21 +194,21 @@
     .kai-form {
       border-top: 1px solid #111827;
       padding-top: 6px;
-      margin-top: 4px;
+      margin-top: 8px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
     .kai-input {
       width: 100%;
-      min-height: 64px;
+      min-height: 70px;
       resize: vertical;
       background: #020617;
       border-radius: 10px;
       border: 1px solid #1f2937;
-      padding: 8px 10px;
-      color: #e5e7eb;
+      padding: 9px 11px;
+      color: var(--text-main);
       font-size: 0.9rem;
     }
 
@@ -236,36 +219,36 @@
 
     .kai-controls {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
+      gap: 8px;
       align-items: center;
-      gap: 6px;
-    }
-
-    .kai-controls-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.78rem;
-      color: #9ca3af;
     }
 
     .kai-btn {
       border: none;
       border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 0.85rem;
+      padding: 9px 16px;
+      font-size: 0.9rem;
       cursor: pointer;
       background: #2563eb;
       color: white;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
 
     .kai-btn.secondary {
       background: #020617;
       color: #e5e7eb;
       border: 1px solid #1f2937;
+    }
+
+    .kai-btn.primary-large {
+      font-size: 1rem;
+      padding: 10px 22px;
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      font-weight: 500;
     }
 
     .kai-btn:disabled {
@@ -288,71 +271,65 @@
 </head>
 <body>
   <div id="kai-root"></div>
+
   <script>
     (function () {
-      const BACKEND_URL = "https://projectpilot-backend-zkad.onrender.com";
+      // IMPORTANT: call the API route
+      const BACKEND_URL = "https://projectpilot-backend-zkad.onrender.com/api/chat";
 
       const root = document.getElementById("kai-root");
 
       root.innerHTML = `
         <div class="aero-shell">
           <section class="aero-left">
-            <div class="aero-portrait-frame" id="kai-avatar">
+            <div class="aero-portrait" id="aero-portrait">
               <img
                 src="https://static.wixstatic.com/media/3cf059_8ea281ce3ec3479cb9c0e84121468cf3~mv2.png"
-                alt="Aero, your AI project coach"
-                class="aero-portrait-img"
+                alt="Aero – Your AI Project Coach"
               />
-              <div class="aero-glow"></div>
             </div>
             <div>
-              <h1>Meet Aero, your project coach</h1>
-              <p>
-                Think of me as your friendly PM mentor. Whenever you’re unsure what’s going on
-                or what to do next, just talk to me and we’ll figure it out together.
+              <div class="aero-name">AERO</div>
+              <h2 class="aero-title-main">Your AI Project Coach</h2>
+              <p class="aero-tagline">
+                Tell me what's going on with your project and we'll figure out the next right step together.
               </p>
             </div>
           </section>
 
           <section class="aero-chat-shell">
-            <header class="kai-header-bar">
+            <header class="aero-chat-header">
               <div>
-                <div class="kai-header-title">Aero – AI Project Coach</div>
-                <div class="kai-header-sub" id="kai-status-text">Ready</div>
+                <div class="aero-name">CHAT WITH AERO</div>
               </div>
-              <div class="kai-status-pill">
+              <div class="aero-status">
                 <div class="kai-status-dot"></div>
-                Live mentor mode
+                <span id="kai-status-text">Ready</span>
               </div>
             </header>
 
-            <div class="kai-chat">
+            <section class="kai-chat">
               <div id="kai-messages" class="kai-messages"></div>
               <form id="kai-form" class="kai-form">
                 <textarea
                   id="kai-input"
                   class="kai-input"
-                  placeholder="Tell me what’s going on in your project, or ask me a question..."
+                  placeholder="Describe your project or ask a question..."
                 ></textarea>
                 <div class="kai-controls">
-                  <div class="kai-controls-left">
-                    <span>Press “Talk” to speak, or type and hit Send.</span>
-                  </div>
-                  <div style="display:flex; gap:6px; align-items:center;">
-                    <button type="button" class="kai-btn secondary" id="kai-mic-btn">
-                      <span class="kai-mic-dot" id="kai-mic-dot"></span>
-                      <span id="kai-mic-label">Talk</span>
-                    </button>
-                    <button type="submit" class="kai-btn" id="kai-send-btn">Send</button>
-                  </div>
+                  <button type="button" class="kai-btn primary-large" id="kai-mic-btn">
+                    <span class="kai-mic-dot" id="kai-mic-dot"></span>
+                    <span id="kai-mic-label">Talk</span>
+                  </button>
+                  <button type="submit" class="kai-btn" id="kai-send-btn">Send</button>
                 </div>
               </form>
-            </div>
+            </section>
           </section>
         </div>
       `;
 
-      const avatarEl = document.getElementById("kai-avatar");
+      const portraitEl = document.getElementById("aero-portrait");
       const messagesEl = document.getElementById("kai-messages");
       const formEl = document.getElementById("kai-form");
       const inputEl = document.getElementById("kai-input");
@@ -376,11 +353,7 @@
         bubble.className = "kai-bubble " + (role === "user" ? "user" : "assistant");
         bubble.textContent = text;
 
-        if (role === "user") {
-          wrapper.style.alignItems = "flex-end";
-        } else {
-          wrapper.style.alignItems = "flex-start";
-        }
+        wrapper.style.alignItems = role === "user" ? "flex-end" : "flex-start";
 
         wrapper.appendChild(who);
         wrapper.appendChild(bubble);
@@ -393,15 +366,60 @@
         statusText.textContent = isLoading ? "Thinking…" : "Ready";
       }
 
+      function playAudioFromBase64(b64) {
+        try {
+          const byteChars = atob(b64);
+          const byteNumbers = new Array(byteChars.length);
+          for (let i = 0; i < byteChars.length; i++) {
+            byteNumbers[i] = byteChars.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: "audio/mpeg" });
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+
+          if (portraitEl) portraitEl.classList.add("aero-talking");
+
+          audio.onended = audio.onpause = () => {
+            if (portraitEl) portraitEl.classList.remove("aero-talking");
+            URL.revokeObjectURL(url);
+          };
+
+          audio.play().catch((err) => {
+            console.error("Audio play error", err);
+            if (portraitEl) portraitEl.classList.remove("aero-talking");
+          });
+        } catch (e) {
+          console.error("Error decoding audio", e);
+        }
+      }
+
+      // fallback browser TTS if no ElevenLabs audio comes back
+      function speakTextFallback(text) {
+        if (!("speechSynthesis" in window)) return;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+
+        utterance.onstart = function () {
+          if (portraitEl) portraitEl.classList.add("aero-talking");
+        };
+        utterance.onend = utterance.onerror = function () {
+          if (portraitEl) portraitEl.classList.remove("aero-talking");
+        };
+
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      }
+
       async function callBackend(userMessage) {
         if (!BACKEND_URL.includes("http")) {
           appendBubble(
-            "Backend URL is not configured yet. Ask your admin to update BACKEND_URL in the widget code.",
+            "Backend URL is not configured yet. Ask your admin to update BACKEND_URL.",
             "assistant"
           );
           return;
         }
-
         setLoading(true);
         try {
           const res = await fetch(BACKEND_URL, {
@@ -409,31 +427,31 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: userMessage }),
           });
-
           if (!res.ok) {
             const text = await res.text();
-            console.error("Backend error:", text);
             throw new Error(text || res.statusText);
           }
-
           const data = await res.json();
-          const reply =
-            (data.reply || "").trim() ||
-            "I’m not sure how to respond to that, but tell me a bit more.";
-
+          const reply = (data.reply || "").trim() || "I’m not sure how to respond to that.";
           appendBubble(reply, "assistant");
-          speakWithAeroVoice(reply);
+
+          if (data.audioBase64) {
+            playAudioFromBase64(data.audioBase64);
+          } else {
+            speakTextFallback(reply);
+          }
         } catch (err) {
-          console.error(err);
           appendBubble(
             "There was an error contacting the ProjectPilot server. Please try again in a moment.",
             "assistant"
           );
+          console.error(err);
         } finally {
           setLoading(false);
         }
       }
 
+      // ---- FORM SUBMIT (text) ----
       formEl.addEventListener("submit", function (e) {
         e.preventDefault();
         const text = inputEl.value.trim();
@@ -443,42 +461,14 @@
         callBackend(text);
       });
 
-      /* SPEECH OUTPUT
-         ElevenLabs audio already comes from your backend.
-         This browser speech is a *backup* and also drives the
-         little “Aero is talking” animation around his portrait.
-      */
-      function speakWithAeroVoice(text) {
-        // If you want ONLY ElevenLabs audio and no browser voice, uncomment:
-        // return;
-
-        if (!("speechSynthesis" in window)) return;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-
-        utterance.onstart = function () {
-          if (avatarEl) avatarEl.classList.add("aero-avatar-talking");
-        };
-        utterance.onend = function () {
-          if (avatarEl) avatarEl.classList.remove("aero-avatar-talking");
-        };
-        utterance.onerror = function () {
-          if (avatarEl) avatarEl.classList.remove("aero-avatar-talking");
-        };
-
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
-      }
-
-      // SPEECH INPUT
+      // ---- SPEECH INPUT ----
       let recognition = null;
       let recognizing = false;
 
       function initSpeechRecognition() {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR) {
-          micLabel.textContent = "No mic";
+          micLabel.textContent = "Voice input not supported in this browser";
           micBtn.disabled = true;
           return;
         }
@@ -498,8 +488,10 @@
           micLabel.textContent = "Talk";
         };
         recognition.onresult = function (event) {
-          const transcript = event.results[0][0].transcript;
-          inputEl.value = transcript;
+          const transcript = (event.results[0][0].transcript || "").trim();
+          if (!transcript) return;
+          appendBubble(transcript, "user");
+          callBackend(transcript);
         };
         recognition.onerror = function (event) {
           console.error("Speech recognition error:", event.error);
@@ -507,15 +499,13 @@
       }
 
       micBtn.addEventListener("click", function () {
-        if (!recognition) {
-          initSpeechRecognition();
-        }
+        if (!recognition) initSpeechRecognition();
         if (!recognition) return;
         if (recognizing) recognition.stop();
         else recognition.start();
       });
 
-      // Initial welcome message
+      // Initial welcome
       appendBubble(
         "Hi, I’m Aero, your AI project coach. Tell me about your project and I’ll help you build a schedule, identify risks, or figure out what to do next.",
         "assistant"
