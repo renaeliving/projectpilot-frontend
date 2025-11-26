@@ -26,53 +26,52 @@
       justify-content: center;
     }
 
-   #kai-root {
-  width: 100%;
-  max-width: 1300px;       /* let Aero get larger */
-  padding: 24px;
-}
+    #kai-root {
+      width: 100%;
+      max-width: 1300px;
+      padding: 24px;
+    }
 
-/* ========= LAYOUT ========= */
+    /* ========= LAYOUT ========= */
 
-.aero-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 0.5fr) minmax(0, 0.5fr); /* ~50/50 split */
-  gap: 40px;
-  background: transparent;   /* no big card */
-  border-radius: 0;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  align-items: center;
-}
+    .aero-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 0.5fr) minmax(0, 0.5fr);
+      gap: 40px;
+      background: transparent;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      align-items: center;
+    }
 
-@media (max-width: 900px) {
-  .aero-shell {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-}
+    @media (max-width: 900px) {
+      .aero-shell {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
 
-.aero-left {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;  /* align to left, feels more natural */
-  gap: 18px;
-}
+    .aero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 18px;
+    }
 
-/* Aero photo – big and prominent, but still with glow */
-.aero-portrait {
-  width: 100%;
-  max-width: 520px;          /* make him bigger */
-  border-radius: 28px;
-  overflow: hidden;
-  border: 1px solid #1f2937;
-  background: radial-gradient(circle at top, #0ea5e9 0, #020617 55%, #020617 100%);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
-  position: relative;
-}
-
+    /* Aero photo */
+    .aero-portrait {
+      width: 100%;
+      max-width: 520px;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid #1f2937;
+      background: radial-gradient(circle at top, #0ea5e9 0, #020617 55%, #020617 100%);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
+      position: relative;
+    }
 
     .aero-portrait::before {
       content: "";
@@ -278,22 +277,21 @@
 
   <script>
     (function () {
-      // IMPORTANT: call the API route
+      // IMPORTANT: API route
       const BACKEND_URL = "https://projectpilot-backend-zkad.onrender.com/api/chat";
 
       const root = document.getElementById("kai-root");
 
       root.innerHTML = `
         <div class="aero-shell">
-        <section class="aero-left">
-  <div class="aero-portrait" id="aero-portrait">
-    <img
-      src="https://static.wixstatic.com/media/3cf059_8ea281ce3ec3479cb9c0e84121468cf3~mv2.png"
-      alt="Aero – Your AI Project Coach"
-    />
-  </div>
-</section>
-
+          <section class="aero-left">
+            <div class="aero-portrait" id="aero-portrait">
+              <img
+                src="https://static.wixstatic.com/media/3cf059_8ea281ce3ec3479cb9c0e84121468cf3~mv2.png"
+                alt="Aero – Your AI Project Coach"
+              />
+            </div>
+          </section>
 
           <section class="aero-chat-shell">
             <header class="aero-chat-header">
@@ -337,15 +335,9 @@
       const micBtn = document.getElementById("kai-mic-btn");
       const micDot = document.getElementById("kai-mic-dot");
       const micLabel = document.getElementById("kai-mic-label");
+
       // Simple browser-side memory
-let aeroUserName = localStorage.getItem("aeroUserName") || null;
-
-// Helper: personalize text with name if we know it
-function personalize(text) {
-  if (!aeroUserName) return text;
-  return text.replace(/\bfriend\b/gi, aeroUserName); // optional fun
-}
-
+      let aeroUserName = localStorage.getItem("aeroUserName") || null;
 
       function appendBubble(text, role) {
         const wrapper = document.createElement("div");
@@ -429,24 +421,24 @@ function personalize(text) {
         }
         setLoading(true);
         try {
-         const payload = {
-  message: userMessage,
-  userName: aeroUserName || null
-};
+          const payload = {
+            message: userMessage,
+            userName: aeroUserName || null,
+          };
 
-const res = await fetch(BACKEND_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(payload),
-});
-
+          const res = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
           });
+
           if (!res.ok) {
             const text = await res.text();
             throw new Error(text || res.statusText);
           }
           const data = await res.json();
-          const reply = (data.reply || "").trim() || "I’m not sure how to respond to that.";
+          const reply =
+            (data.reply || "").trim() || "I’m not sure how to respond to that.";
           appendBubble(reply, "assistant");
 
           if (data.audioBase64) {
@@ -466,24 +458,25 @@ const res = await fetch(BACKEND_URL, {
       }
 
       // ---- FORM SUBMIT (text) ----
-    formEl.addEventListener("submit", function (e) {
-  e.preventDefault();
-  const text = inputEl.value.trim();
-  if (!text) return;
-  appendBubble(text, "user");
-  inputEl.value = "";
+      formEl.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const text = inputEl.value.trim();
+        if (!text) return;
+        appendBubble(text, "user");
+        inputEl.value = "";
 
-  // If we don't know their name yet, treat this as their name
-  if (!aeroUserName) {
-    aeroUserName = text.split(" ")[0].replace(/[^a-zA-Z]/g, ""); // first word, clean
-    localStorage.setItem("aeroUserName", aeroUserName);
-    // Send a special message to backend to confirm & then move into project help
-    callBackend(`The user's name is ${aeroUserName}. Greet them and ask what project they want help with.`);
-  } else {
-    callBackend(text);
-  }
-});
-
+        // If we don't know their name yet, treat this as their name
+        if (!aeroUserName) {
+          aeroUserName = text.split(" ")[0].replace(/[^a-zA-Z]/g, "");
+          localStorage.setItem("aeroUserName", aeroUserName);
+          // Send a special message to backend to greet and ask about project
+          callBackend(
+            `The user's name is ${aeroUserName}. Greet them and ask what project they want help with.`
+          );
+        } else {
+          callBackend(text);
+        }
+      });
 
       // ---- SPEECH INPUT ----
       let recognition = null;
@@ -530,23 +523,18 @@ const res = await fetch(BACKEND_URL, {
       });
 
       // Initial welcome
-    if (!aeroUserName) {
-  appendBubble(
-    "Hi, I’m Aero, your AI project coach. Before we dive in – what should I call you?",
-    "assistant"
-  );
-} else {
-  appendBubble(
-    `Welcome back, ${aeroUserName}! What project are we working on today?`,
-    "assistant"
-  );
-}
-
-      );
+      if (!aeroUserName) {
+        appendBubble(
+          "Hi, I’m Aero, your AI project coach. Before we dive in – what should I call you?",
+          "assistant"
+        );
+      } else {
+        appendBubble(
+          `Welcome back, ${aeroUserName}! What project are we working on today?`,
+          "assistant"
+        );
+      }
     })();
   </script>
 </body>
 </html>
-
-
-
