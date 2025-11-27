@@ -81,7 +81,7 @@
       pointer-events: none;
     }
 
-    /* soft glow while talking */
+    /* soft glow while talking (used for ElevenLabs / fallback audio) */
     .aero-portrait.aero-talking {
       box-shadow: 0 0 35px rgba(56, 189, 248, 0.9);
       border-color: var(--accent-strong);
@@ -264,18 +264,6 @@
       box-shadow: 0 0 8px rgba(239, 68, 68, 0.9);
     }
   </style>
-
-  <!-- D-ID Agent embed: full mode (mic always on unless muted) -->
-  <script
-    type="module"
-    src="https://agent.d-id.com/v2/index.js"
-    data-mode="full"
-    data-client-key="YXV0aDB8NjkyNzcwOTllYWM2MGViY2FkNzg3ZjkyOlM5YjFic0tIdHBMQmZRVHhNaXRVaw=="
-    data-agent-id="v2_agt_5zuKUXBH"
-    data-name="did-agent"
-    data-monitor="true"
-    data-target-id="d-id-avatar">
-  </script>
 </head>
 <body>
   <div id="kai-root"></div>
@@ -287,6 +275,7 @@
 
       const root = document.getElementById("kai-root");
 
+      // Build the UI (including the D-ID target div)
       root.innerHTML = `
         <div class="aero-shell">
           <section class="aero-left">
@@ -327,6 +316,20 @@
           </section>
         </div>
       `;
+
+      // 🔹 AFTER the avatar div exists, dynamically load the D-ID Agent script
+      (function loadDidAgent() {
+        const script = document.createElement("script");
+        script.type = "module";
+        script.src = "https://agent.d-id.com/v2/index.js";
+        script.setAttribute("data-mode", "full");
+        script.setAttribute("data-client-key", "YXV0aDB8NjkyNzcwOTllYWM2MGViY2FkNzg3ZjkyOlM5YjFic0tIdHBMQmZRVHhNaXRVaw==");
+        script.setAttribute("data-agent-id", "v2_agt_5zuKUXBH");
+        script.setAttribute("data-name", "did-agent");
+        script.setAttribute("data-monitor", "true");
+        script.setAttribute("data-target-id", "d-id-avatar");
+        document.body.appendChild(script);
+      })();
 
       const portraitEl = document.getElementById("aero-portrait");
       const messagesEl = document.getElementById("kai-messages");
@@ -396,7 +399,7 @@
         }
       }
 
-      // Fallback browser TTS if no ElevenLabs audio comes back
+      // fallback browser TTS if no ElevenLabs audio comes back
       function speakTextFallback(text) {
         if (!("speechSynthesis" in window)) return;
         const utterance = new SpeechSynthesisUtterance(text);
