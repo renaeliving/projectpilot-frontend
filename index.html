@@ -6,12 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --shell-bg: rgba(15, 23, 42, 0.92);
       --border-soft: #1f2937;
-      --accent: #0ea5e9;
       --accent-strong: #38bdf8;
-      --text-main: #e5e7eb;
-      --text-soft: #9ca3af;
     }
 
     body {
@@ -19,55 +15,30 @@
       padding: 0;
       background: radial-gradient(circle at top, #0ea5e9 0, #020617 40%, #000 100%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text-main);
+      color: #e5e7eb;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    #kai-root {
+    /* Center container */
+    #page-root {
       width: 100%;
-      max-width: 1300px;
+      max-width: 1100px;
       padding: 24px;
-    }
-
-    /* ========= LAYOUT ========= */
-
-    .aero-shell {
-      display: grid;
-      grid-template-columns: minmax(0, 0.5fr) minmax(0, 0.5fr);
-      gap: 40px;
-      background: transparent;
-      border-radius: 0;
-      border: none;
-      box-shadow: none;
-      padding: 0;
-      align-items: center;
-    }
-
-    @media (max-width: 900px) {
-      .aero-shell {
-        grid-template-columns: 1fr;
-        gap: 24px;
-      }
-    }
-
-    .aero-left {
       display: flex;
-      flex-direction: column;
       justify-content: center;
-      align-items: flex-start;
-      gap: 18px;
     }
 
-    /* Aero / D-ID portrait container */
+    /* Big card for the D-ID agent */
     .aero-portrait {
       width: 100%;
-      max-width: 520px;
+      max-width: 720px;       /* how wide the card is */
+      height: 420px;          /* <-- this is the key so it's not tiny */
       border-radius: 28px;
       overflow: hidden;
-      border: 1px solid #1f2937;
+      border: 1px solid var(--border-soft);
       background: radial-gradient(circle at top, #0ea5e9 0, #020617 55%, #020617 100%);
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
       position: relative;
@@ -81,466 +52,43 @@
       pointer-events: none;
     }
 
-    /* soft glow while talking (used for ElevenLabs / fallback audio) */
     .aero-portrait.aero-talking {
       box-shadow: 0 0 35px rgba(56, 189, 248, 0.9);
       border-color: var(--accent-strong);
     }
 
-    .aero-name {
-      font-size: 1.1rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-soft);
-    }
-
-    .aero-title-main {
-      font-size: 1.6rem;
-      font-weight: 600;
-      margin: 4px 0 0;
-      color: #f9fafb;
-    }
-
-    .aero-tagline {
-      margin: 6px 0 0;
-      font-size: 0.9rem;
-      color: var(--text-soft);
-      max-width: 26rem;
-    }
-
-    /* ========= CHAT PANEL ========= */
-
-    .aero-chat-shell {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .aero-chat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .aero-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      color: var(--text-soft);
-    }
-
-    .kai-status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 8px rgba(34, 197, 94, 0.9);
-    }
-
-    .kai-chat {
-      background: #020617;
-      border-radius: 16px;
-      border: 1px solid var(--border-soft);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      min-height: 260px;
-    }
-
-    .kai-messages {
-      flex: 1;
-      overflow-y: auto;
-      max-height: 380px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding-right: 4px;
-    }
-
-    .kai-bubble {
-      padding: 9px 11px;
-      border-radius: 12px;
-      max-width: 92%;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      font-size: 0.9rem;
-    }
-
-    .kai-bubble.user {
-      align-self: flex-end;
-      background: #1f2937;
-    }
-
-    .kai-bubble.assistant {
-      align-self: flex-start;
-      background: #020617;
-      border: 1px solid #1e293b;
-    }
-
-    .kai-speaker {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #9ca3af;
-      margin-bottom: 3px;
-    }
-
-    .kai-form {
-      border-top: 1px solid #111827;
-      padding-top: 6px;
-      margin-top: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .kai-input {
+    /* D-ID target area */
+    #d-id-avatar {
       width: 100%;
-      min-height: 70px;
-      resize: vertical;
-      background: #020617;
-      border-radius: 10px;
-      border: 1px solid #1f2937;
-      padding: 9px 11px;
-      color: var(--text-main);
-      font-size: 0.9rem;
+      height: 100%;           /* fill the card */
     }
 
-    .kai-input:focus {
-      outline: 1px solid #3b82f6;
-      border-color: #3b82f6;
-    }
-
-    .kai-controls {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .kai-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 9px 16px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      background: #2563eb;
-      color: white;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .kai-btn.secondary {
-      background: #020617;
-      color: #e5e7eb;
-      border: 1px solid #1f2937;
-    }
-
-    .kai-btn.primary-large {
-      font-size: 1rem;
-      padding: 10px 22px;
-      background: linear-gradient(135deg, #0ea5e9, #2563eb);
-      font-weight: 500;
-    }
-
-    .kai-btn:disabled {
-      opacity: 0.6;
-      cursor: default;
-    }
-
-    .kai-mic-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: #4b5563;
-    }
-
-    .kai-mic-dot.active {
-      background: #ef4444;
-      box-shadow: 0 0 8px rgba(239, 68, 68, 0.9);
+    /* Make the internal D-ID element fill too */
+    #d-id-avatar > * {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 28px;
     }
   </style>
 </head>
 <body>
-  <div id="kai-root"></div>
+  <div id="page-root">
+    <div class="aero-portrait" id="aero-portrait">
+      <!-- D-ID Agent will render inside this -->
+      <div id="d-id-avatar"></div>
+    </div>
+  </div>
 
-  <script>
-    (function () {
-      // Backend API route for Aero
-      const BACKEND_URL = "https://projectpilot-backend-zkad.onrender.com/api/chat";
-
-      const root = document.getElementById("kai-root");
-
-      // Build the UI (including the D-ID target div)
-      root.innerHTML = `
-        <div class="aero-shell">
-          <section class="aero-left">
-            <div class="aero-portrait" id="aero-portrait">
-              <!-- D-ID Agent will auto-render inside this div -->
-              <div id="d-id-avatar" style="width: 100%; height: 100%;"></div>
-            </div>
-          </section>
-
-          <section class="aero-chat-shell">
-            <header class="aero-chat-header">
-              <div>
-                <div class="aero-name">CHAT WITH AERO</div>
-              </div>
-              <div class="aero-status">
-                <div class="kai-status-dot"></div>
-                <span id="kai-status-text">Ready</span>
-              </div>
-            </header>
-
-            <section class="kai-chat">
-              <div id="kai-messages" class="kai-messages"></div>
-              <form id="kai-form" class="kai-form">
-                <textarea
-                  id="kai-input"
-                  class="kai-input"
-                  placeholder="Describe your project or ask a question..."
-                ></textarea>
-                <div class="kai-controls">
-                  <button type="button" class="kai-btn primary-large" id="kai-mic-btn">
-                    <span class="kai-mic-dot" id="kai-mic-dot"></span>
-                    <span id="kai-mic-label">Talk</span>
-                  </button>
-                  <button type="submit" class="kai-btn" id="kai-send-btn">Send</button>
-                </div>
-              </form>
-            </section>
-          </section>
-        </div>
-      `;
-
-      // 🔹 AFTER the avatar div exists, dynamically load the D-ID Agent script
-      (function loadDidAgent() {
-        const script = document.createElement("script");
-        script.type = "module";
-        script.src = "https://agent.d-id.com/v2/index.js";
-        script.setAttribute("data-mode", "full");
-        script.setAttribute("data-client-key", "YXV0aDB8NjkyNzcwOTllYWM2MGViY2FkNzg3ZjkyOlM5YjFic0tIdHBMQmZRVHhNaXRVaw==");
-        script.setAttribute("data-agent-id", "v2_agt_5zuKUXBH");
-        script.setAttribute("data-name", "did-agent");
-        script.setAttribute("data-monitor", "true");
-        script.setAttribute("data-target-id", "d-id-avatar");
-        document.body.appendChild(script);
-      })();
-
-      const portraitEl = document.getElementById("aero-portrait");
-      const messagesEl = document.getElementById("kai-messages");
-      const formEl = document.getElementById("kai-form");
-      const inputEl = document.getElementById("kai-input");
-      const statusText = document.getElementById("kai-status-text");
-      const sendBtn = document.getElementById("kai-send-btn");
-
-      const micBtn = document.getElementById("kai-mic-btn");
-      const micDot = document.getElementById("kai-mic-dot");
-      const micLabel = document.getElementById("kai-mic-label");
-
-      // Simple browser-side memory
-      let aeroUserName = localStorage.getItem("aeroUserName") || null;
-
-      function appendBubble(text, role) {
-        const wrapper = document.createElement("div");
-        const who = document.createElement("div");
-        const bubble = document.createElement("div");
-        wrapper.style.display = "flex";
-        wrapper.style.flexDirection = "column";
-
-        who.className = "kai-speaker";
-        who.textContent = role === "user" ? "You" : "Aero";
-
-        bubble.className = "kai-bubble " + (role === "user" ? "user" : "assistant");
-        bubble.textContent = text;
-
-        wrapper.style.alignItems = role === "user" ? "flex-end" : "flex-start";
-
-        wrapper.appendChild(who);
-        wrapper.appendChild(bubble);
-        messagesEl.appendChild(wrapper);
-        messagesEl.scrollTop = messagesEl.scrollHeight;
-      }
-
-      function setLoading(isLoading) {
-        sendBtn.disabled = isLoading;
-        statusText.textContent = isLoading ? "Thinking…" : "Ready";
-      }
-
-      function playAudioFromBase64(b64) {
-        try {
-          const byteChars = atob(b64);
-          const byteNumbers = new Array(byteChars.length);
-          for (let i = 0; i < byteChars.length; i++) {
-            byteNumbers[i] = byteChars.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: "audio/mpeg" });
-          const url = URL.createObjectURL(blob);
-          const audio = new Audio(url);
-
-          if (portraitEl) portraitEl.classList.add("aero-talking");
-
-          audio.onended = audio.onpause = () => {
-            if (portraitEl) portraitEl.classList.remove("aero-talking");
-            URL.revokeObjectURL(url);
-          };
-
-          audio.play().catch((err) => {
-            console.error("Audio play error", err);
-            if (portraitEl) portraitEl.classList.remove("aero-talking");
-          });
-        } catch (e) {
-          console.error("Error decoding audio", e);
-        }
-      }
-
-      // fallback browser TTS if no ElevenLabs audio comes back
-      function speakTextFallback(text) {
-        if (!("speechSynthesis" in window)) return;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-
-        utterance.onstart = function () {
-          if (portraitEl) portraitEl.classList.add("aero-talking");
-        };
-        utterance.onend = utterance.onerror = function () {
-          if (portraitEl) portraitEl.classList.remove("aero-talking");
-        };
-
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
-      }
-
-      async function callBackend(userMessage) {
-        if (!BACKEND_URL.includes("http")) {
-          appendBubble(
-            "Backend URL is not configured yet. Ask your admin to update BACKEND_URL.",
-            "assistant"
-          );
-          return;
-        }
-        setLoading(true);
-        try {
-          const payload = {
-            message: userMessage,
-            userName: aeroUserName || null,
-          };
-
-          const res = await fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-
-          if (!res.ok) {
-            const text = await res.text();
-            throw new Error(text || res.statusText);
-          }
-          const data = await res.json();
-          const reply =
-            (data.reply || "").trim() || "I’m not sure how to respond to that.";
-          appendBubble(reply, "assistant");
-
-          if (data.audioBase64) {
-            playAudioFromBase64(data.audioBase64);
-          } else {
-            speakTextFallback(reply);
-          }
-        } catch (err) {
-          appendBubble(
-            "There was an error contacting the ProjectPilot server. Please try again in a moment.",
-            "assistant"
-          );
-          console.error(err);
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      // ---- FORM SUBMIT (text) ----
-      formEl.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const text = inputEl.value.trim();
-        if (!text) return;
-        appendBubble(text, "user");
-        inputEl.value = "";
-
-        // If we don't know their name yet, treat this as their name
-        if (!aeroUserName) {
-          aeroUserName = text.split(" ")[0].replace(/[^a-zA-Z]/g, "");
-          localStorage.setItem("aeroUserName", aeroUserName);
-          // Send a special message to backend to greet and ask about project
-          callBackend(
-            `The user's name is ${aeroUserName}. Greet them and ask what project they want help with.`
-          );
-        } else {
-          callBackend(text);
-        }
-      });
-
-      // ---- SPEECH INPUT (your own Talk button) ----
-      let recognition = null;
-      let recognizing = false;
-
-      function initSpeechRecognition() {
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SR) {
-          micLabel.textContent = "Voice input not supported in this browser";
-          micBtn.disabled = true;
-          return;
-        }
-        recognition = new SR();
-        recognition.lang = "en-US";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        recognition.onstart = function () {
-          recognizing = true;
-          micDot.classList.add("active");
-          micLabel.textContent = "Listening…";
-        };
-        recognition.onend = function () {
-          recognizing = false;
-          micDot.classList.remove("active");
-          micLabel.textContent = "Talk";
-        };
-        recognition.onresult = function (event) {
-          const transcript = (event.results[0][0].transcript || "").trim();
-          if (!transcript) return;
-          appendBubble(transcript, "user");
-          callBackend(transcript);
-        };
-        recognition.onerror = function (event) {
-          console.error("Speech recognition error:", event.error);
-        };
-      }
-
-      micBtn.addEventListener("click", function () {
-        if (!recognition) initSpeechRecognition();
-        if (!recognition) return;
-        if (recognizing) recognition.stop();
-        else recognition.start();
-      });
-
-      // Initial welcome
-      if (!aeroUserName) {
-        appendBubble(
-          "Hi, I’m Aero, your AI project coach. Before we dive in – what should I call you?",
-          "assistant"
-        );
-      } else {
-        appendBubble(
-          `Welcome back, ${aeroUserName}! What project are we working on today?`,
-          "assistant"
-        );
-      }
-    })();
+  <!-- D-ID Agent embed: FULL mode (mic always on unless muted) -->
+  <script
+    type="module"
+    src="https://agent.d-id.com/v2/index.js"
+    data-mode="full"
+    data-client-key="YXV0aDB8NjkyNzcwOTllYWM2MGViY2FkNzg3ZjkyOlM5YjFic0tIdHBMQmZRVHhNaXRVaw=="
+    data-agent-id="v2_agt_5zuKUXBH"
+    data-name="did-agent"
+    data-monitor="true"
+    data-target-id="d-id-avatar">
   </script>
 </body>
 </html>
