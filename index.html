@@ -271,6 +271,16 @@
       box-shadow: 0 0 8px rgba(239, 68, 68, 0.9);
     }
   </style>
+  <script type="module"
+      src="https://agent.d-id.com/v2/index.js"
+      data-mode="full"
+      data-client-key="YXV0aDB8NjkyNzcwOTllYWM2MGViY2FkNzg3ZjkyOlM5YjFic0tIdHBMQmZRVHhNaXRVaw=="
+      data-agent-id="v2_agt_5zuKUXBH"
+      data-name="did-agent"
+      data-monitor="true"
+      data-target-id="d-id-avatar">
+</script>
+
 </head>
 <body>
   <div id="kai-root"></div>
@@ -286,21 +296,10 @@
         <div class="aero-shell">
           <section class="aero-left">
             <div class="aero-portrait" id="aero-portrait">
-  <video
-    id="aero-video"
-    autoplay
-    muted
-    loop
-    playsinline
-    style="width: 100%; height: auto; display: block; object-fit: cover;"
-  >
-    <source
-      src="https://video.wixstatic.com/video/3cf059_422b147f83034cfeb0748ca29790c1d5/1080p/mp4/file.mp4"
-      type="video/mp4"
-    />
-    Your browser does not support the video tag.
-  </video>
+    <!-- D-ID Agent will auto-render inside this div -->
+    <div id="d-id-avatar" style="width: 100%; height: 100%;"></div>
 </div>
+
 
           </section>
 
@@ -549,6 +548,7 @@
   </script>
 </body>
 </html>
+
 
 
 
