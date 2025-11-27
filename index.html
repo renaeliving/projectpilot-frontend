@@ -21,6 +21,41 @@
       align-items: center;
       justify-content: center;
     }
+/* ============================
+   CLEAN UP D-ID FULL-MODE UI
+   ============================ */
+
+/* Hide suggestion bubbles */
+.did-agent-suggestions,
+.did-agent-suggestion,
+.did-agent-prompt-container,
+.agent-prompt {
+  display: none !important;
+}
+
+/* Hide UI buttons (gear, mic, chat) */
+.did-agent-control-menu,
+.did-agent-controls,
+.did-agent-icon-button,
+.did-agent-avatar-name {
+  display: none !important;
+}
+
+/* Remove background card */
+.did-agent-wrapper,
+.did-agent-container,
+.did-agent-avatar-container {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure internal canvas or video background is transparent */
+.did-agent-container canvas,
+.did-agent-container video {
+  background: transparent !important;
+}
 
     /* Center container */
     #page-root {
@@ -92,3 +127,4 @@
   </script>
 </body>
 </html>
+
