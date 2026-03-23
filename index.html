@@ -178,6 +178,21 @@
   </script>
 
   <script>
+    // ---------- USER ID MANAGEMENT ----------
+    function getOrCreateUserId() {
+      let userId = localStorage.getItem("rayUserId");
+
+      if (!userId) {
+        userId = "user_" + Math.random().toString(36).substring(2, 10);
+        localStorage.setItem("rayUserId", userId);
+      }
+
+      return userId;
+    }
+
+    const userId = getOrCreateUserId();
+    console.log("Ray userId:", userId);
+
     // ---------- FRONTEND FILE UPLOAD LOGIC ----------
     const UPLOAD_URL = "https://projectpilot-backend-zkad.onrender.com/api/upload-schedule";
 
@@ -195,6 +210,7 @@
 
       const formData = new FormData();
       formData.append("schedule", file);
+      formData.append("userId", userId);
 
       analyzeBtn.disabled = true;
       statusEl.textContent = "Uploading and analyzing your schedule...";
