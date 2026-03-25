@@ -144,10 +144,26 @@
 </head>
 <body>
   <div id="page-root">
-    <div class="aero-portrait" id="aero-portrait">
-      <!-- D-ID Agent will render inside this -->
-      <div id="d-id-avatar"></div>
-    </div>
+   <section class="upload-panel">
+  <h2>Chat with Ray</h2>
+  <p>
+    Ask Ray about your schedule, risks, milestones, issues, owners, and next steps.
+  </p>
+
+  <div id="chat-history" style="max-height: 320px; overflow-y: auto; margin-bottom: 12px; padding: 10px; background: #020617; border: 1px solid #1f2937; border-radius: 12px;"></div>
+
+  <div class="upload-row">
+    <input
+      type="text"
+      id="chat-input"
+      placeholder="Ask Ray a question..."
+      style="flex: 1; min-width: 220px; background: #020617; border-radius: 8px; border: 1px solid #1f2937; padding: 10px; color: #e5e7eb; font-size: 0.95rem;"
+    />
+    <button id="send-chat-btn" class="upload-btn">Send</button>
+  </div>
+
+  <div id="chat-status" style="font-size: 0.8rem; color: #9ca3af; min-height: 1.2em;"></div>
+</section>
 
     <section class="upload-panel">
       <h2>Upload a project schedule for risk review</h2>
@@ -166,16 +182,7 @@
   </div>
 
   <!-- D-ID Agent embed: FULL mode (mic always on unless muted) -->
-  <script
-    type="module"
-    src="https://agent.d-id.com/v2/index.js"
-    data-mode="full"
-    data-client-key="YXV0aDB8NjkyNzcwOTllYWM2MGViY2FkNzg3ZjkyOlM5YjFic0tIdHBMQmZRVHhNaXRVaw=="
-    data-agent-id="v2_agt_5zuKUXBH"
-    data-name="did-agent"
-    data-monitor="true"
-    data-target-id="d-id-avatar">
-  </script>
+ 
 
   <script>
   // ---------- USER ID MANAGEMENT ----------
