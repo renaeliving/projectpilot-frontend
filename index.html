@@ -253,6 +253,26 @@
         analyzeBtn.disabled = false;
       }
     });
+    <section class="upload-panel">
+  <h2>Chat with Ray</h2>
+  <p>
+    Ask Ray about your schedule, risks, milestones, issues, owners, and next steps.
+  </p>
+
+  <div id="chat-history" style="max-height: 320px; overflow-y: auto; margin-bottom: 12px; padding: 10px; background: #020617; border: 1px solid #1f2937; border-radius: 12px;"></div>
+
+  <div class="upload-row">
+    <input
+      type="text"
+      id="chat-input"
+      placeholder="Ask Ray a question..."
+      style="flex: 1; min-width: 220px; background: #020617; border-radius: 8px; border: 1px solid #1f2937; padding: 10px; color: #e5e7eb; font-size: 0.95rem;"
+    />
+    <button id="send-chat-btn" class="upload-btn">Send</button>
+  </div>
+
+  <div id="chat-status" style="font-size: 0.8rem; color: #9ca3af; min-height: 1.2em;"></div>
+</section>
   </script>
 </body>
 </html>
