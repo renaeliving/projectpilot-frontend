@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Aero – Your AI Project Coach</title>
+  <title>Ray – Your AI Project Coach</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -31,43 +31,9 @@
       gap: 18px;
     }
 
-    /* Big card for the D-ID agent */
-    .aero-portrait {
-      width: 100%;
-      max-width: 720px;
-      height: 420px;
-      border-radius: 28px;
-      overflow: hidden;
-      border: 1px solid var(--border-soft);
-      background: radial-gradient(circle at top, #0ea5e9 0, #020617 55%, #020617 100%);
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
-      position: relative;
-      margin: 0 auto;
-    }
-
-    .aero-portrait::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 60%);
-      pointer-events: none;
-    }
-
-    #d-id-avatar {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Make the internal D-ID element fill the card */
-    #d-id-avatar > * {
-      width: 100% !important;
-      height: 100% !important;
-      border-radius: 28px;
-    }
-
-    /* Upload / analysis panel */
     .upload-panel {
       max-width: 720px;
+      width: 100%;
       margin: 0 auto;
       background: rgba(2, 6, 23, 0.92);
       border-radius: 16px;
@@ -97,15 +63,16 @@
       margin-bottom: 8px;
     }
 
-    #schedule-file {
+    #schedule-file,
+    #chat-input {
       flex: 1;
       min-width: 220px;
       background: #020617;
       border-radius: 8px;
       border: 1px solid #1f2937;
-      padding: 6px;
+      padding: 10px;
       color: #e5e7eb;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
     }
 
     .upload-btn {
@@ -124,7 +91,8 @@
       cursor: default;
     }
 
-    #upload-status {
+    #upload-status,
+    #chat-status {
       font-size: 0.8rem;
       color: #9ca3af;
       min-height: 1.2em;
@@ -140,30 +108,56 @@
       overflow-y: auto;
       white-space: pre-wrap;
     }
+
+    #chat-history {
+      max-height: 320px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      padding: 10px;
+      background: #020617;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+    }
+
+    .chat-message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      border: 1px solid #1f2937;
+    }
+
+    .chat-user {
+      background: #0f172a;
+    }
+
+    .chat-assistant {
+      background: #111827;
+    }
   </style>
 </head>
 <body>
   <div id="page-root">
-   <section class="upload-panel">
-  <h2>Chat with Ray</h2>
-  <p>
-    Ask Ray about your schedule, risks, milestones, issues, owners, and next steps.
-  </p>
+    <section class="upload-panel">
+      <h2>Chat with Ray</h2>
+      <p>
+        Ask Ray about your schedule, risks, milestones, issues, owners, and next steps.
+      </p>
 
-  <div id="chat-history" style="max-height: 320px; overflow-y: auto; margin-bottom: 12px; padding: 10px; background: #020617; border: 1px solid #1f2937; border-radius: 12px;"></div>
+      <div id="chat-history"></div>
 
-  <div class="upload-row">
-    <input
-      type="text"
-      id="chat-input"
-      placeholder="Ask Ray a question..."
-      style="flex: 1; min-width: 220px; background: #020617; border-radius: 8px; border: 1px solid #1f2937; padding: 10px; color: #e5e7eb; font-size: 0.95rem;"
-    />
-    <button id="send-chat-btn" class="upload-btn">Send</button>
-  </div>
+      <div class="upload-row">
+        <input
+          type="text"
+          id="chat-input"
+          placeholder="Ask Ray a question..."
+        />
+        <button id="send-chat-btn" class="upload-btn">Send</button>
+      </div>
 
-  <div id="chat-status" style="font-size: 0.8rem; color: #9ca3af; min-height: 1.2em;"></div>
-</section>
+      <div id="chat-status"></div>
+    </section>
 
     <section class="upload-panel">
       <h2>Upload a project schedule for risk review</h2>
@@ -176,37 +170,54 @@
         <input type="file" id="schedule-file" accept=".csv" />
         <button id="analyze-btn" class="upload-btn">Analyze schedule</button>
       </div>
+
       <div id="upload-status"></div>
       <div id="analysis-result"></div>
     </section>
   </div>
 
-  <!-- D-ID Agent embed: FULL mode (mic always on unless muted) -->
- 
-
   <script>
-  // ---------- USER ID MANAGEMENT ----------
-  function getOrCreateUserId() {
-    let userId = localStorage.getItem("rayUserId");
+    function getOrCreateUserId() {
+      let userId = localStorage.getItem("rayUserId");
 
-    if (!userId) {
-      userId = "user_" + Math.random().toString(36).substring(2, 10);
-      localStorage.setItem("rayUserId", userId);
+      if (!userId) {
+        userId = "user_" + Math.random().toString(36).substring(2, 10);
+        localStorage.setItem("rayUserId", userId);
+      }
+
+      return userId;
     }
 
-    return userId;
-  }
+    const userId = getOrCreateUserId();
+    console.log("Ray userId:", userId);
 
-  const userId = getOrCreateUserId();
-  console.log("Ray userId:", userId);
-
-    // ---------- FRONTEND FILE UPLOAD LOGIC ----------
-    const UPLOAD_URL = "https://projectpilot-backend-zkad.onrender.com/api/upload-schedule";
+    const BACKEND_BASE = "https://projectpilot-backend-zkad.onrender.com";
+    const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
+    const CHAT_URL = `${BACKEND_BASE}/api/chat`;
 
     const fileInput = document.getElementById("schedule-file");
     const analyzeBtn = document.getElementById("analyze-btn");
     const statusEl = document.getElementById("upload-status");
     const resultEl = document.getElementById("analysis-result");
+
+    const chatHistoryEl = document.getElementById("chat-history");
+    const chatInput = document.getElementById("chat-input");
+    const sendChatBtn = document.getElementById("send-chat-btn");
+    const chatStatusEl = document.getElementById("chat-status");
+
+    function addChatMessage(role, text) {
+      const msg = document.createElement("div");
+      msg.className = `chat-message ${role === "user" ? "chat-user" : "chat-assistant"}`;
+      msg.innerHTML = `<strong>${role === "user" ? "You" : "Ray"}:</strong><br>${escapeHtml(text)}`;
+      chatHistoryEl.appendChild(msg);
+      chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
 
     analyzeBtn.addEventListener("click", async () => {
       const file = fileInput.files[0];
@@ -238,6 +249,7 @@
         }
 
         const data = await res.json();
+
         if (data.error) {
           statusEl.textContent = data.error;
           return;
@@ -253,26 +265,51 @@
         analyzeBtn.disabled = false;
       }
     });
-    <section class="upload-panel">
-  <h2>Chat with Ray</h2>
-  <p>
-    Ask Ray about your schedule, risks, milestones, issues, owners, and next steps.
-  </p>
 
-  <div id="chat-history" style="max-height: 320px; overflow-y: auto; margin-bottom: 12px; padding: 10px; background: #020617; border: 1px solid #1f2937; border-radius: 12px;"></div>
+    async function sendChatMessage() {
+      const message = chatInput.value.trim();
+      if (!message) return;
 
-  <div class="upload-row">
-    <input
-      type="text"
-      id="chat-input"
-      placeholder="Ask Ray a question..."
-      style="flex: 1; min-width: 220px; background: #020617; border-radius: 8px; border: 1px solid #1f2937; padding: 10px; color: #e5e7eb; font-size: 0.95rem;"
-    />
-    <button id="send-chat-btn" class="upload-btn">Send</button>
-  </div>
+      addChatMessage("user", message);
+      chatInput.value = "";
+      chatStatusEl.textContent = "Ray is thinking...";
+      sendChatBtn.disabled = true;
 
-  <div id="chat-status" style="font-size: 0.8rem; color: #9ca3af; min-height: 1.2em;"></div>
-</section>
+      try {
+        const res = await fetch(CHAT_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userId,
+            message
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Chat failed");
+        }
+
+        addChatMessage("assistant", data.reply || "No response.");
+        chatStatusEl.textContent = "";
+      } catch (err) {
+        console.error(err);
+        chatStatusEl.textContent = "Chat failed. Please try again.";
+      } finally {
+        sendChatBtn.disabled = false;
+      }
+    }
+
+    sendChatBtn.addEventListener("click", sendChatMessage);
+
+    chatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        sendChatMessage();
+      }
+    });
   </script>
 </body>
 </html>
