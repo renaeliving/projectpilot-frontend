@@ -64,7 +64,8 @@
     }
 
     #schedule-file,
-    #chat-input {
+    #chat-input,
+    #project-name {
       flex: 1;
       min-width: 220px;
       background: #020617;
@@ -140,6 +141,21 @@
 <body>
   <div id="page-root">
     <section class="upload-panel">
+      <h2>Project Context</h2>
+      <p>
+        Enter the project name so Ray can organize schedules, risks, issues, and dates by project.
+      </p>
+
+      <div class="upload-row">
+        <input
+          type="text"
+          id="project-name"
+          placeholder="Project name"
+        />
+      </div>
+    </section>
+
+    <section class="upload-panel">
       <h2>Chat with Ray</h2>
       <p>
         Ask Ray about your schedule, risks, milestones, issues, owners, and next steps.
@@ -195,6 +211,8 @@
     const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
     const CHAT_URL = `${BACKEND_BASE}/api/chat`;
 
+    const projectNameInput = document.getElementById("project-name");
+
     const fileInput = document.getElementById("schedule-file");
     const analyzeBtn = document.getElementById("analyze-btn");
     const statusEl = document.getElementById("upload-status");
@@ -229,6 +247,7 @@
       const formData = new FormData();
       formData.append("schedule", file);
       formData.append("userId", userId);
+      formData.append("projectName", projectNameInput.value.trim());
 
       analyzeBtn.disabled = true;
       statusEl.textContent = "Uploading and analyzing your schedule...";
@@ -283,6 +302,7 @@
           },
           body: JSON.stringify({
             userId,
+            projectName: projectNameInput.value.trim(),
             message
           })
         });
