@@ -99,6 +99,13 @@
       min-height: 1.2em;
     }
 
+    #project-context-status {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      min-height: 1.2em;
+    }
+
     #analysis-result {
       margin-top: 10px;
       padding-top: 8px;
@@ -143,18 +150,21 @@
     <section class="upload-panel">
       <h2>Project Context</h2>
       <p>
-        Enter the project name so Ray can organize schedules, risks, issues, and dates by project.
+        Enter or select a project name so Ray can organize schedules, risks, issues, and dates by project.
+        Leave it blank in chat if you want general project management coaching.
       </p>
 
-     <div class="upload-row">
-  <input
-    type="text"
-    id="project-name"
-    placeholder="Project name"
-    list="project-name-list"
-  />
-  <datalist id="project-name-list"></datalist>
-</div>
+      <div class="upload-row">
+        <input
+          type="text"
+          id="project-name"
+          placeholder="Project name"
+          list="project-name-list"
+        />
+        <datalist id="project-name-list"></datalist>
+      </div>
+
+      <div id="project-context-status"></div>
     </section>
 
     <section class="upload-panel">
@@ -213,7 +223,12 @@
     const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
     const CHAT_URL = `${BACKEND_BASE}/api/chat`;
 
+    const PROJECT_NAMES_KEY = "rayProjectNames";
+    const LAST_PROJECT_KEY = "rayLastProjectName";
+
     const projectNameInput = document.getElementById("project-name");
+    const projectNameList = document.getElementById("project-name-list");
+    const projectContextStatus = document.getElementById("project-context-status");
 
     const fileInput = document.getElementById("schedule-file");
     const analyzeBtn = document.getElementById("analyze-btn");
@@ -225,6 +240,12 @@
     const sendChatBtn = document.getElementById("send-chat-btn");
     const chatStatusEl = document.getElementById("chat-status");
 
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
     function addChatMessage(role, text) {
       const msg = document.createElement("div");
       msg.className = `chat-message ${role === "user" ? "chat-user" : "chat-assistant"}`;
@@ -233,14 +254,83 @@
       chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
     }
 
-    function escapeHtml(text) {
-      const div = document.createElement("div");
-      div.textContent = text;
-      return div.innerHTML;
+    function getSavedProjectNames() {
+      try {
+        const raw = localStorage.getItem(PROJECT_NAMES_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
     }
+
+    function saveProjectNames(names) {
+      localStorage.setItem(PROJECT_NAMES_KEY, JSON.stringify(names));
+    }
+
+    function renderProjectNameOptions() {
+      const names = getSavedProjectNames();
+      projectNameList.innerHTML = "";
+
+      names.forEach((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        projectNameList.appendChild(option);
+      });
+    }
+
+    function addProjectNameToSavedList(name) {
+      const cleanName = (name || "").trim();
+      if (!cleanName) return;
+
+      const existing = getSavedProjectNames();
+      const alreadyExists = existing.some(
+        (p) => p.toLowerCase() === cleanName.toLowerCase()
+      );
+
+      if (!alreadyExists) {
+        existing.push(cleanName);
+        existing.sort((a, b) => a.localeCompare(b));
+        saveProjectNames(existing);
+      }
+
+      renderProjectNameOptions();
+    }
+
+    function updateProjectContextStatus() {
+      const projectName = projectNameInput.value.trim();
+
+      if (projectName) {
+        projectContextStatus.textContent = `Active project: ${projectName}`;
+      } else {
+        projectContextStatus.textContent = "Mode: General project coaching";
+      }
+    }
+
+    projectNameInput.value = localStorage.getItem(LAST_PROJECT_KEY) || "";
+
+    renderProjectNameOptions();
+    updateProjectContextStatus();
+
+    projectNameInput.addEventListener("input", () => {
+      localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
+      updateProjectContextStatus();
+    });
+
+    projectNameInput.addEventListener("change", () => {
+      localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
+      updateProjectContextStatus();
+    });
 
     analyzeBtn.addEventListener("click", async () => {
       const file = fileInput.files[0];
+      const projectName = projectNameInput.value.trim();
+
+      if (!projectName) {
+        statusEl.textContent = "Please enter or select a project name before uploading a schedule.";
+        return;
+      }
+
       if (!file) {
         statusEl.textContent = "Please choose a CSV file first.";
         return;
@@ -249,7 +339,7 @@
       const formData = new FormData();
       formData.append("schedule", file);
       formData.append("userId", userId);
-      formData.append("projectName", projectNameInput.value.trim());
+      formData.append("projectName", projectName);
 
       analyzeBtn.disabled = true;
       statusEl.textContent = "Uploading and analyzing your schedule...";
@@ -278,6 +368,9 @@
 
         statusEl.textContent = "Here’s Ray’s assessment of your schedule:";
         resultEl.textContent = data.analysis || "No analysis returned.";
+        addProjectNameToSavedList(projectName);
+        localStorage.setItem(LAST_PROJECT_KEY, projectName);
+        updateProjectContextStatus();
       } catch (err) {
         console.error(err);
         statusEl.textContent =
@@ -289,6 +382,8 @@
 
     async function sendChatMessage() {
       const message = chatInput.value.trim();
+      const projectName = projectNameInput.value.trim();
+
       if (!message) return;
 
       addChatMessage("user", message);
@@ -304,7 +399,7 @@
           },
           body: JSON.stringify({
             userId,
-            projectName: projectNameInput.value.trim(),
+            projectName,
             message
           })
         });
@@ -317,6 +412,11 @@
 
         addChatMessage("assistant", data.reply || "No response.");
         chatStatusEl.textContent = "";
+
+        if (projectName) {
+          addProjectNameToSavedList(projectName);
+          localStorage.setItem(LAST_PROJECT_KEY, projectName);
+        }
       } catch (err) {
         console.error(err);
         chatStatusEl.textContent = "Chat failed. Please try again.";
@@ -329,6 +429,7 @@
 
     chatInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
+        e.preventDefault();
         sendChatMessage();
       }
     });
