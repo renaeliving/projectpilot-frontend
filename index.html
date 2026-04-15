@@ -187,7 +187,7 @@
       <div id="chat-status"></div>
     </section>
 
-  <section class="upload-panel" id="upload-panel">
+    <section class="upload-panel" id="upload-panel">
       <h2>Upload a project schedule for risk review</h2>
       <p>
         Export your schedule as a <strong>CSV</strong> (from MS Project, Smartsheet, Excel, etc.),
@@ -201,32 +201,32 @@
 
       <div id="upload-status"></div>
       <div id="analysis-result"></div>
-   <div id="upgrade-panel" class="upload-panel" style="display:none;">
-  <h2>Want deeper project insight?</h2>
-  <p>
-    Upgrade to <strong>Ray Pro Monthly</strong> to unlock file uploads, schedule analysis, and a more personalized coaching experience.
-    Use coupon code <strong>B2PUpgrade</strong> to get <strong>$12 off your first Ray Pro Monthly purchase</strong>.
-    <a
-      id="upgrade-link"
-      href="https://www.projectpilot.ai/pricing-plans/list"
-      target="_blank"
-      rel="noopener noreferrer"
-      style="color:#38bdf8;"
-    >Explore plans and upgrade</a>
-  </p>
-</div>
     </section>
+
+    <div id="upgrade-panel" class="upload-panel" style="display:none;">
+      <h2>Want deeper project insight?</h2>
+      <p>
+        Upgrade to <strong>Ray Pro Monthly</strong> to unlock file uploads, schedule analysis, and a more personalized coaching experience.
+        Use coupon code <strong>B2PUpgrade</strong> to get <strong>$12 off your first Ray Pro Monthly purchase</strong>.
+        <a
+          id="upgrade-link"
+          href="https://www.projectpilot.ai/pricing-plans/list"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="color:#38bdf8;"
+        >Explore plans and upgrade</a>
+      </p>
+    </div>
   </div>
 
   <script>
-   function getWixUserId() {
-  const wixUserId = localStorage.getItem("wixMemberId");
-  return wixUserId || "";
-}
+    function getWixUserId() {
+      const wixUserId = localStorage.getItem("wixMemberId");
+      return wixUserId || "";
+    }
 
-const userId = getWixUserId();
-console.log("Ray Wix userId:", userId);
-  
+    const userId = getWixUserId();
+    console.log("Ray Wix userId:", userId);
 
     const BACKEND_BASE = "https://projectpilot-backend-zkad.onrender.com";
     const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
@@ -250,26 +250,27 @@ console.log("Ray Wix userId:", userId);
     const chatInput = document.getElementById("chat-input");
     const sendChatBtn = document.getElementById("send-chat-btn");
     const chatStatusEl = document.getElementById("chat-status");
-let wixPlanName = "";
-const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
-let uploadHidden = true;
+
+    let wixPlanName = "";
+    const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
+    let uploadHidden = true;
+
     window.addEventListener("message", (event) => {
-  const data = event.data || {};
+      const data = event.data || {};
 
-  if (!data.planName) return;
+      if (!data.planName) return;
 
-  wixPlanName = data.planName;
-  uploadHidden = !uploadAllowedPlans.includes(wixPlanName);
+      wixPlanName = data.planName;
+      uploadHidden = !uploadAllowedPlans.includes(wixPlanName);
 
- if (uploadPanelEl) {
-  uploadPanelEl.style.display = uploadHidden ? "none" : "";
-}
+      if (uploadPanelEl) {
+        uploadPanelEl.style.display = uploadHidden ? "none" : "";
+      }
 
-if (upgradePanelEl) {
-  upgradePanelEl.style.display = uploadHidden ? "" : "none";
-}
-});
-    
+      if (upgradePanelEl) {
+        upgradePanelEl.style.display = uploadHidden ? "" : "none";
+      }
+    });
 
     function escapeHtml(text) {
       const div = document.createElement("div");
@@ -344,9 +345,9 @@ if (upgradePanelEl) {
     updateProjectContextStatus();
 
     if (uploadHidden) {
-  if (uploadPanelEl) uploadPanelEl.style.display = "none";
-  if (upgradePanelEl) upgradePanelEl.style.display = "";
-}
+      if (uploadPanelEl) uploadPanelEl.style.display = "none";
+      if (upgradePanelEl) upgradePanelEl.style.display = "";
+    }
 
     projectNameInput.addEventListener("input", () => {
       localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
