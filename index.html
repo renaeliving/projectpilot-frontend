@@ -260,9 +260,13 @@ let uploadHidden = true;
   wixPlanName = data.planName;
   uploadHidden = !uploadAllowedPlans.includes(wixPlanName);
 
-  if (uploadPanelEl) {
-    uploadPanelEl.style.display = uploadHidden ? "none" : "";
-  }
+ if (uploadPanelEl) {
+  uploadPanelEl.style.display = uploadHidden ? "none" : "";
+}
+
+if (upgradePanelEl) {
+  upgradePanelEl.style.display = uploadHidden ? "" : "none";
+}
 });
     
 
@@ -338,9 +342,10 @@ let uploadHidden = true;
     renderProjectNameOptions();
     updateProjectContextStatus();
 
-    if (uploadHidden && uploadPanelEl) {
-      uploadPanelEl.style.display = "none";
-    }
+    if (uploadHidden) {
+  if (uploadPanelEl) uploadPanelEl.style.display = "none";
+  if (upgradePanelEl) upgradePanelEl.style.display = "";
+}
 
     projectNameInput.addEventListener("input", () => {
       localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
