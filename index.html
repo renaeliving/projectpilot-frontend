@@ -301,56 +301,25 @@
       localStorage.setItem(PROJECT_NAMES_KEY, JSON.stringify(names));
     }
 
-function renderProjectNameOptions(names = getSavedProjectNames()) {
-  projectNameList.innerHTML = "";
+    function renderProjectNameOptions(names = getSavedProjectNames()) {
+      projectNameList.innerHTML = "";
 
-  names.forEach((name) => {
-    const option = document.createElement("option");
-    option.value = name;
-    projectNameList.appendChild(option);
-  });
-}
-
-   function addProjectNameToSavedList(name) {
-  const cleanName = (name || "").trim();
-  if (!cleanName) return;
-
-  const existing = getSavedProjectNames();
-  const alreadyExists = existing.some(
-    (p) => p.toLowerCase() === cleanName.toLowerCase()
-  );
-
-  if (!alreadyExists) {
-    existing.push(cleanName);
-    existing.sort((a, b) => a.localeCompare(b));
-    saveProjectNames(existing);
-  }
-
-  renderProjectNameOptions();
-}
-
-async function loadProjectsForUser() {
-  if (!userId) return;
-
-  try {
-    const res = await fetch(`${PROJECTS_URL}?userId=${encodeURIComponent(userId)}`);
-    if (!res.ok) {
-      throw new Error(`Project load failed: ${res.status}`);
+      names.forEach((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        projectNameList.appendChild(option);
+      });
     }
 
-    const data = await res.json();
-    const projectNames = Array.isArray(data.projects)
-      ? data.projects.map((p) => p.name).filter(Boolean)
-      : [];
+    function addProjectNameToSavedList(name) {
+      const cleanName = (name || "").trim();
+      if (!cleanName) return;
 
-    if (projectNames.length) {
-      saveProjectNames(projectNames);
-      renderProjectNameOptions(projectNames);
-    }
-  } catch (err) {
-    console.error("Could not load project list:", err);
-  }
-}
+      const existing = getSavedProjectNames();
+      const alreadyExists = existing.some(
+        (p) => p.toLowerCase() === cleanName.toLowerCase()
+      );
+
       if (!alreadyExists) {
         existing.push(cleanName);
         existing.sort((a, b) => a.localeCompare(b));
@@ -358,6 +327,32 @@ async function loadProjectsForUser() {
       }
 
       renderProjectNameOptions();
+    }
+
+    async function loadProjectsForUser() {
+      if (!userId) return;
+
+      try {
+        const res = await fetch(`${PROJECTS_URL}?userId=${encodeURIComponent(userId)}`);
+        if (!res.ok) {
+          throw new Error(`Project load failed: ${res.status}`);
+        }
+
+        const data = await res.json();
+        const projectNames = Array.isArray(data.projects)
+          ? data.projects.map((p) => p.name).filter(Boolean)
+          : [];
+
+        if (projectNames.length) {
+          saveProjectNames(projectNames);
+          renderProjectNameOptions(projectNames);
+        } else {
+          renderProjectNameOptions();
+        }
+      } catch (err) {
+        console.error("Could not load project list:", err);
+        renderProjectNameOptions();
+      }
     }
 
     function updateProjectContextStatus() {
@@ -370,16 +365,18 @@ async function loadProjectsForUser() {
       }
     }
 
-    projectNameInput.value = localStorage.getItem(LAST_PROJECT_KEY) || "";
-    await loadProjectsForUser();
+    function initializePage() {
+      projectNameInput.value = localStorage.getItem(LAST_PROJECT_KEY) || "";
 
-   renderProjectNameOptions();
-   updateProjectContextStatus();
+      loadProjectsForUser().finally(() => {
+        updateProjectContextStatus();
 
-if (uploadHidden) {
-  if (uploadPanelEl) uploadPanelEl.style.display = "none";
-  if (upgradePanelEl) upgradePanelEl.style.display = "";
-}
+        if (uploadHidden) {
+          if (uploadPanelEl) uploadPanelEl.style.display = "none";
+          if (upgradePanelEl) upgradePanelEl.style.display = "";
+        }
+      });
+    }
 
     projectNameInput.addEventListener("input", () => {
       localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
@@ -502,6 +499,8 @@ if (uploadHidden) {
         sendChatMessage();
       }
     });
+
+    initializePage();
   </script>
 </body>
 </html>
