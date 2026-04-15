@@ -231,6 +231,7 @@
     const BACKEND_BASE = "https://projectpilot-backend-zkad.onrender.com";
     const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
     const CHAT_URL = `${BACKEND_BASE}/api/chat`;
+    const PROJECTS_URL = `${BACKEND_BASE}/api/projects`;
 
     const PROJECT_NAMES_KEY = "rayProjectNames";
     const LAST_PROJECT_KEY = "rayLastProjectName";
@@ -300,26 +301,56 @@
       localStorage.setItem(PROJECT_NAMES_KEY, JSON.stringify(names));
     }
 
-    function renderProjectNameOptions() {
-      const names = getSavedProjectNames();
-      projectNameList.innerHTML = "";
+function renderProjectNameOptions(names = getSavedProjectNames()) {
+  projectNameList.innerHTML = "";
 
-      names.forEach((name) => {
-        const option = document.createElement("option");
-        option.value = name;
-        projectNameList.appendChild(option);
-      });
+  names.forEach((name) => {
+    const option = document.createElement("option");
+    option.value = name;
+    projectNameList.appendChild(option);
+  });
+}
+
+   function addProjectNameToSavedList(name) {
+  const cleanName = (name || "").trim();
+  if (!cleanName) return;
+
+  const existing = getSavedProjectNames();
+  const alreadyExists = existing.some(
+    (p) => p.toLowerCase() === cleanName.toLowerCase()
+  );
+
+  if (!alreadyExists) {
+    existing.push(cleanName);
+    existing.sort((a, b) => a.localeCompare(b));
+    saveProjectNames(existing);
+  }
+
+  renderProjectNameOptions();
+}
+
+async function loadProjectsForUser() {
+  if (!userId) return;
+
+  try {
+    const res = await fetch(`${PROJECTS_URL}?userId=${encodeURIComponent(userId)}`);
+    if (!res.ok) {
+      throw new Error(`Project load failed: ${res.status}`);
     }
 
-    function addProjectNameToSavedList(name) {
-      const cleanName = (name || "").trim();
-      if (!cleanName) return;
+    const data = await res.json();
+    const projectNames = Array.isArray(data.projects)
+      ? data.projects.map((p) => p.name).filter(Boolean)
+      : [];
 
-      const existing = getSavedProjectNames();
-      const alreadyExists = existing.some(
-        (p) => p.toLowerCase() === cleanName.toLowerCase()
-      );
-
+    if (projectNames.length) {
+      saveProjectNames(projectNames);
+      renderProjectNameOptions(projectNames);
+    }
+  } catch (err) {
+    console.error("Could not load project list:", err);
+  }
+}
       if (!alreadyExists) {
         existing.push(cleanName);
         existing.sort((a, b) => a.localeCompare(b));
@@ -340,14 +371,15 @@
     }
 
     projectNameInput.value = localStorage.getItem(LAST_PROJECT_KEY) || "";
+    await loadProjectsForUser();
 
-    renderProjectNameOptions();
-    updateProjectContextStatus();
+   renderProjectNameOptions();
+   updateProjectContextStatus();
 
-    if (uploadHidden) {
-      if (uploadPanelEl) uploadPanelEl.style.display = "none";
-      if (upgradePanelEl) upgradePanelEl.style.display = "";
-    }
+if (uploadHidden) {
+  if (uploadPanelEl) uploadPanelEl.style.display = "none";
+  if (upgradePanelEl) upgradePanelEl.style.display = "";
+}
 
     projectNameInput.addEventListener("input", () => {
       localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
