@@ -205,19 +205,14 @@
   </div>
 
   <script>
-    function getOrCreateUserId() {
-      let userId = localStorage.getItem("rayUserId");
+   function getWixUserId() {
+  const wixUserId = localStorage.getItem("wixMemberId");
+  return wixUserId || "";
+}
 
-      if (!userId) {
-        userId = "user_" + Math.random().toString(36).substring(2, 10);
-        localStorage.setItem("rayUserId", userId);
-      }
-
-      return userId;
-    }
-
-    const userId = getOrCreateUserId();
-    console.log("Ray userId:", userId);
+const userId = getWixUserId();
+console.log("Ray Wix userId:", userId);
+  
 
     const BACKEND_BASE = "https://projectpilot-backend-zkad.onrender.com";
     const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
