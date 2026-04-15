@@ -187,7 +187,7 @@
       <div id="chat-status"></div>
     </section>
 
-    <section class="upload-panel">
+  <section class="upload-panel" id="upload-panel">
       <h2>Upload a project schedule for risk review</h2>
       <p>
         Export your schedule as a <strong>CSV</strong> (from MS Project, Smartsheet, Excel, etc.),
@@ -229,11 +229,28 @@ console.log("Ray Wix userId:", userId);
     const analyzeBtn = document.getElementById("analyze-btn");
     const statusEl = document.getElementById("upload-status");
     const resultEl = document.getElementById("analysis-result");
+    const uploadPanelEl = document.getElementById("upload-panel");
 
     const chatHistoryEl = document.getElementById("chat-history");
     const chatInput = document.getElementById("chat-input");
     const sendChatBtn = document.getElementById("send-chat-btn");
     const chatStatusEl = document.getElementById("chat-status");
+let wixPlanName = "";
+const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
+let uploadHidden = true;
+    window.addEventListener("message", (event) => {
+  const data = event.data || {};
+
+  if (!data.planName) return;
+
+  wixPlanName = data.planName;
+  uploadHidden = !uploadAllowedPlans.includes(wixPlanName);
+
+  if (uploadPanelEl) {
+    uploadPanelEl.style.display = uploadHidden ? "none" : "";
+  }
+});
+    
 
     function escapeHtml(text) {
       const div = document.createElement("div");
@@ -306,6 +323,10 @@ console.log("Ray Wix userId:", userId);
 
     renderProjectNameOptions();
     updateProjectContextStatus();
+
+    if (uploadHidden && uploadPanelEl) {
+      uploadPanelEl.style.display = "none";
+    }
 
     projectNameInput.addEventListener("input", () => {
       localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
