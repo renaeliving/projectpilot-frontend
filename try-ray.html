@@ -6,11 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --border-soft: #1f2937;
       --panel-bg: rgba(2, 6, 23, 0.92);
       --text-main: #e5e7eb;
       --text-soft: #9ca3af;
-      --accent: #38bdf8;
     }
 
     body {
@@ -113,16 +111,9 @@
     }
 
     .panel h2 {
-      margin: 0 0 4px;
+      margin: 0 0 8px;
       font-size: 1.1rem;
       color: #f9fafb;
-    }
-
-    .panel p {
-      margin: 0 0 10px;
-      color: var(--text-soft);
-      font-size: 0.85rem;
-      line-height: 1.45;
     }
 
     .preview-banner {
@@ -190,12 +181,6 @@
       cursor: default;
     }
 
-    .btn.secondary {
-      background: #020617;
-      border: 1px solid #1f2937;
-      color: var(--text-main);
-    }
-
     .tiny-chat-btn {
       border: 1px solid rgba(255, 255, 255, 0.16);
       background: rgba(255, 255, 255, 0.06);
@@ -242,8 +227,6 @@
     .chat-assistant {
       background: #111827;
     }
-
-   
 
     .feature-disabled {
       border: 1px dashed rgba(148, 163, 184, 0.35);
@@ -300,17 +283,13 @@
     </div>
 
     <div id="ray-main">
-     <section class="panel preview-banner">
-  <span class="preview-badge">Free Preview</span>
-  <h2>Try Ray</h2>
-</section>
+      <section class="panel preview-banner">
+        <span class="preview-badge">Free Preview</span>
+        <h2>Try Ray</h2>
+      </section>
 
       <section class="panel">
         <h2>Project Context</h2>
-        <p>
-          Select an existing project or choose <strong>Add new project...</strong> to create one.
-          Leave it blank if you want general project management coaching.
-        </p>
 
         <div class="upload-row">
           <select id="project-name">
@@ -334,15 +313,10 @@
         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px;">
           <div>
             <h2>Chat with Ray</h2>
-            <p>
-              Ask Ray about risks, issues, milestones, planning, priorities, and what to do next.
-            </p>
           </div>
 
           <button id="download-chat-btn" class="tiny-chat-btn" type="button">Download</button>
         </div>
-
-       
 
         <div class="upload-row" style="margin-top:12px;">
           <input
@@ -359,9 +333,6 @@
 
       <section class="panel">
         <h2>Upload your project schedule as a CSV</h2>
-        <p>
-          Ray Pro users can upload a schedule for deeper analysis of tasks, dependencies, dates, and delivery risk.
-        </p>
 
         <div class="upload-row">
           <input type="file" id="schedule-file" accept=".csv" disabled />
@@ -475,7 +446,6 @@
 
       if (rayStartWrap) rayStartWrap.style.display = "flex";
       if (rayAudioControls) rayAudioControls.style.display = "none";
-      chatStatusEl.textContent = "New here? Click the button next to Ray to hear a quick welcome message.";
     }
 
     function showAudioControls() {
@@ -487,9 +457,7 @@
       showAudioControls();
       playWelcomeIntro();
       localStorage.setItem(getIntroStorageKey(), "true");
-      if (chatStatusEl.textContent.startsWith("New here?")) {
-        chatStatusEl.textContent = "";
-      }
+      chatStatusEl.textContent = "";
     });
 
     playIntroBtn.addEventListener("click", playWelcomeIntro);
@@ -662,7 +630,7 @@
       } else if (projectNameInput.value === NEW_PROJECT_SENTINEL) {
         projectContextStatus.textContent = "Mode: Creating a new project";
       } else {
-        projectContextStatus.textContent = "Mode: General project coaching";
+        projectContextStatus.textContent = "";
       }
     }
 
@@ -759,7 +727,6 @@
 
     maybePlayIntroOnce();
     maybeShowUpgradePanel();
-   
   </script>
 </body>
 </html>
