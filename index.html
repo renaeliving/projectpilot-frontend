@@ -65,7 +65,8 @@
 
     #schedule-file,
     #chat-input,
-    #project-name {
+    #project-name,
+    #new-project-name {
       flex: 1;
       min-width: 220px;
       background: #020617;
@@ -150,14 +151,23 @@
     <section class="upload-panel">
       <h2>Project Context</h2>
       <p>
-        Select a project so Ray can organize schedules, risks, issues, and dates by project.
+        Select an existing project or choose <strong>Add new project...</strong> to create one.
         Leave it blank in chat if you want general project management coaching.
       </p>
 
       <div class="upload-row">
         <select id="project-name">
           <option value="">Select a project</option>
+          <option value="__new__">Add new project...</option>
         </select>
+      </div>
+
+      <div class="upload-row" id="new-project-row" style="display:none;">
+        <input
+          type="text"
+          id="new-project-name"
+          placeholder="Enter new project name"
+        />
       </div>
 
       <div id="project-context-status"></div>
@@ -231,8 +241,11 @@
 
     const PROJECT_NAMES_KEY = "rayProjectNames";
     const LAST_PROJECT_KEY = "rayLastProjectName";
+    const NEW_PROJECT_SENTINEL = "__new__";
 
     const projectNameInput = document.getElementById("project-name");
+    const newProjectRowEl = document.getElementById("new-project-row");
+    const newProjectNameInput = document.getElementById("new-project-name");
     const projectContextStatus = document.getElementById("project-context-status");
 
     const fileInput = document.getElementById("schedule-file");
@@ -311,6 +324,11 @@
         projectNameInput.appendChild(option);
       });
 
+      const addNewOption = document.createElement("option");
+      addNewOption.value = NEW_PROJECT_SENTINEL;
+      addNewOption.textContent = "Add new project...";
+      projectNameInput.appendChild(addNewOption);
+
       const savedProject = localStorage.getItem(LAST_PROJECT_KEY) || "";
       if (savedProject && names.includes(savedProject)) {
         projectNameInput.value = savedProject;
@@ -364,11 +382,34 @@
       }
     }
 
+    function getSelectedProjectName() {
+      const selected = projectNameInput.value.trim();
+
+      if (selected === NEW_PROJECT_SENTINEL) {
+        return newProjectNameInput.value.trim();
+      }
+
+      return selected;
+    }
+
+    function syncProjectInputMode() {
+      const isNewProject = projectNameInput.value === NEW_PROJECT_SENTINEL;
+      newProjectRowEl.style.display = isNewProject ? "" : "none";
+
+      if (!isNewProject) {
+        newProjectNameInput.value = "";
+      }
+
+      updateProjectContextStatus();
+    }
+
     function updateProjectContextStatus() {
-      const projectName = projectNameInput.value.trim();
+      const projectName = getSelectedProjectName();
 
       if (projectName) {
         projectContextStatus.textContent = `Active project: ${projectName}`;
+      } else if (projectNameInput.value === NEW_PROJECT_SENTINEL) {
+        projectContextStatus.textContent = "Mode: Creating a new project";
       } else {
         projectContextStatus.textContent = "Mode: General project coaching";
       }
@@ -376,7 +417,7 @@
 
     function initializePage() {
       loadProjectsForUser().finally(() => {
-        updateProjectContextStatus();
+        syncProjectInputMode();
 
         if (uploadHidden) {
           if (uploadPanelEl) uploadPanelEl.style.display = "none";
@@ -386,16 +427,27 @@
     }
 
     projectNameInput.addEventListener("change", () => {
-      localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
+      const selected = projectNameInput.value.trim();
+
+      if (selected && selected !== NEW_PROJECT_SENTINEL) {
+        localStorage.setItem(LAST_PROJECT_KEY, selected);
+      } else {
+        localStorage.removeItem(LAST_PROJECT_KEY);
+      }
+
+      syncProjectInputMode();
+    });
+
+    newProjectNameInput.addEventListener("input", () => {
       updateProjectContextStatus();
     });
 
     analyzeBtn.addEventListener("click", async () => {
       const file = fileInput.files[0];
-      const projectName = projectNameInput.value.trim();
+      const projectName = getSelectedProjectName();
 
       if (!projectName) {
-        statusEl.textContent = "Please select a project before uploading a schedule.";
+        statusEl.textContent = "Please select a project or add a new one before uploading a schedule.";
         return;
       }
 
@@ -438,7 +490,9 @@
         resultEl.textContent = data.analysis || "No analysis returned.";
         addProjectNameToSavedList(projectName);
         localStorage.setItem(LAST_PROJECT_KEY, projectName);
-        updateProjectContextStatus();
+        renderProjectNameOptions();
+        projectNameInput.value = projectName;
+        syncProjectInputMode();
       } catch (err) {
         console.error(err);
         statusEl.textContent =
@@ -450,7 +504,7 @@
 
     async function sendChatMessage() {
       const message = chatInput.value.trim();
-      const projectName = projectNameInput.value.trim();
+      const projectName = getSelectedProjectName();
 
       if (!message) return;
 
@@ -484,6 +538,9 @@
         if (projectName) {
           addProjectNameToSavedList(projectName);
           localStorage.setItem(LAST_PROJECT_KEY, projectName);
+          renderProjectNameOptions();
+          projectNameInput.value = projectName;
+          syncProjectInputMode();
         }
       } catch (err) {
         console.error(err);
