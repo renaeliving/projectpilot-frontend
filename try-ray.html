@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Ray – Your AI Project Coach</title>
+  <title>Try Ray – Free AI Project Coach Preview</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -82,12 +82,6 @@
       backdrop-filter: blur(4px);
     }
 
-    .audio-icon-btn.play,
-    .audio-icon-btn.pause,
-    .audio-icon-btn.stop {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
     .audio-icon-btn:hover {
       transform: translateY(-1px);
     }
@@ -102,7 +96,7 @@
       gap: 18px;
     }
 
-    .upload-panel {
+    .panel {
       max-width: 720px;
       width: 100%;
       margin: 0 auto;
@@ -115,16 +109,34 @@
       box-sizing: border-box;
     }
 
-    .upload-panel h2 {
+    .panel h2 {
       margin: 0 0 4px;
       font-size: 1.1rem;
       color: #f9fafb;
     }
 
-    .upload-panel p {
+    .panel p {
       margin: 0 0 10px;
       color: #9ca3af;
       font-size: 0.85rem;
+    }
+
+    .preview-banner {
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(14, 165, 233, 0.08);
+    }
+
+    .preview-badge {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #bae6fd;
+      background: rgba(56, 189, 248, 0.08);
     }
 
     .upload-row {
@@ -135,10 +147,7 @@
       margin-bottom: 8px;
     }
 
-    #schedule-file,
-    #chat-input,
-    #project-name,
-    #new-project-name {
+    #chat-input {
       flex: 1;
       min-width: 220px;
       background: #020617;
@@ -150,7 +159,7 @@
       box-sizing: border-box;
     }
 
-    .upload-btn {
+    .btn {
       border: none;
       border-radius: 999px;
       padding: 8px 16px;
@@ -161,12 +170,12 @@
       white-space: nowrap;
     }
 
-    .upload-btn:disabled {
+    .btn:disabled {
       opacity: 0.6;
       cursor: default;
     }
 
-    .upload-btn.secondary {
+    .btn.secondary {
       background: #020617;
       border: 1px solid #1f2937;
       color: #e5e7eb;
@@ -183,33 +192,14 @@
       white-space: nowrap;
     }
 
-    #upload-status,
     #chat-status {
       font-size: 0.8rem;
       color: #9ca3af;
       min-height: 1.2em;
     }
 
-    #project-context-status {
-      margin-top: 8px;
-      font-size: 0.9rem;
-      color: #94a3b8;
-      min-height: 1.2em;
-    }
-
-    #analysis-result {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid #111827;
-      font-size: 0.86rem;
-      color: #e5e7eb;
-      max-height: 260px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-    }
-
     #chat-history {
-      max-height: 320px;
+      max-height: 360px;
       overflow-y: auto;
       margin-top: 12px;
       padding: 10px;
@@ -233,6 +223,23 @@
 
     .chat-assistant {
       background: #111827;
+    }
+
+    .helper-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .helper-note {
+      margin-top: 8px;
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+
+    #upgrade-panel {
+      display: none;
     }
 
     @media (max-width: 900px) {
@@ -260,87 +267,63 @@
       />
 
       <div id="ray-start-wrap">
-        <button id="start-intro-btn" class="upload-btn" type="button">New here? Click to meet Ray</button>
+        <button id="start-intro-btn" class="btn" type="button">New here? Click to meet Ray</button>
       </div>
 
       <div id="ray-audio-controls" style="display:none;">
-        <button id="play-intro-btn" class="audio-icon-btn play" type="button" aria-label="Play">▶</button>
-        <button id="pause-intro-btn" class="audio-icon-btn pause" type="button" aria-label="Pause">⏸</button>
-        <button id="stop-intro-btn" class="audio-icon-btn stop" type="button" aria-label="Stop">⏹</button>
+        <button id="play-intro-btn" class="audio-icon-btn" type="button" aria-label="Play">▶</button>
+        <button id="pause-intro-btn" class="audio-icon-btn" type="button" aria-label="Pause">⏸</button>
+        <button id="stop-intro-btn" class="audio-icon-btn" type="button" aria-label="Stop">⏹</button>
       </div>
     </div>
 
     <div id="ray-main">
-      <section class="upload-panel">
-        <h2>Project Context</h2>
+      <section class="panel preview-banner">
+        <span class="preview-badge">Free Preview</span>
+        <h2>Try Ray</h2>
         <p>
-          Select an existing project or choose <strong>Add new project...</strong> to create one.
-          Leave it blank if you want general project management coaching.
+          Ask Ray up to <strong>3 questions</strong> about your project, timeline, priorities, risks, or next steps.
+          This preview does not include uploads, saved history, or personalized memory.
         </p>
-
-        <div class="upload-row">
-          <select id="project-name">
-            <option value="">Select a project</option>
-            <option value="__new__">Add new project...</option>
-          </select>
-        </div>
-
-        <div class="upload-row" id="new-project-row" style="display:none;">
-          <input
-            type="text"
-            id="new-project-name"
-            placeholder="Enter new project name"
-          />
-        </div>
-
-        <div id="project-context-status"></div>
       </section>
 
-      <section class="upload-panel">
+      <section class="panel">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px;">
           <div>
             <h2>Chat with Ray</h2>
             <p>
-              Ask Ray about risks, issues, milestones, planning, priorities, and next steps.
+              Ask Ray about risks, issues, milestones, planning, priorities, and what to do next.
             </p>
           </div>
 
           <button id="download-chat-btn" class="tiny-chat-btn" type="button">Download</button>
         </div>
 
-        <div class="upload-row">
+        <div class="helper-grid">
+          <button id="starter-schedule-btn" class="btn secondary" type="button">Starter schedule</button>
+          <button id="identify-risks-btn" class="btn secondary" type="button">Identify risks</button>
+          <button id="next-steps-btn" class="btn secondary" type="button">What should I do next?</button>
+        </div>
+
+        <div class="helper-note">Tip: the helper buttons also count toward the 3-question preview limit.</div>
+
+        <div class="upload-row" style="margin-top:12px;">
           <input
             type="text"
             id="chat-input"
             placeholder="Ask Ray a question..."
           />
-          <button id="send-chat-btn" class="upload-btn">Send</button>
+          <button id="send-chat-btn" class="btn">Send</button>
         </div>
 
         <div id="chat-status"></div>
         <div id="chat-history"></div>
       </section>
 
-      <section class="upload-panel" id="upload-panel">
-        <h2>Upload your project schedule as a CSV</h2>
+      <div id="upgrade-panel" class="panel">
+        <h2>Want full access to Ray?</h2>
         <p>
-          Ray can analyze your schedule in detail and highlight risks, identify issues, and recommend specific actions to keep your project on track.
-        </p>
-
-        <div class="upload-row">
-          <input type="file" id="schedule-file" accept=".csv" />
-          <button id="analyze-btn" class="upload-btn">Analyze schedule</button>
-        </div>
-
-        <div id="upload-status"></div>
-        <div id="analysis-result"></div>
-      </section>
-
-      <div id="upgrade-panel" class="upload-panel" style="display:none;">
-        <h2>Want deeper project insight?</h2>
-        <p>
-          Upgrade to <strong>Ray Pro Monthly</strong> to unlock file uploads, schedule analysis, and a more personalized coaching experience.
-          Use coupon code <strong>B2PUpgrade</strong> to get <strong>$17 off your first Ray Pro Monthly purchase</strong>.
+          You’ve reached the free preview limit. Upgrade to unlock ongoing coaching, uploads, richer project help, and a more personalized Ray experience.
           <a
             id="upgrade-link"
             href="https://www.projectpilot.ai/pricing-plans/list"
@@ -354,39 +337,32 @@
   </div>
 
   <script>
-    function getWixUserId() {
-      return localStorage.getItem("wixMemberId") || "";
-    }
-
     const BACKEND_BASE = "https://projectpilot-backend-zkad.onrender.com";
-    const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
-    const CHAT_URL = `${BACKEND_BASE}/api/chat`;
-    const PROJECTS_URL = `${BACKEND_BASE}/api/projects`;
-
+    const TRY_CHAT_URL = `${BACKEND_BASE}/api/try-ray`;
     const BASIC_INTRO_URL = "https://static.wixstatic.com/mp3/3cf059_47be87100f664ac69dd5fdb4a271e823.mp3";
-    const PRO_INTRO_URL = "https://static.wixstatic.com/mp3/3cf059_7e5830d423f94f9ebfb8b14b9fc112a5.mp3";
 
-    const PROJECT_NAMES_KEY = "rayProjectNames";
-    const LAST_PROJECT_KEY = "rayLastProjectName";
-    const NEW_PROJECT_SENTINEL = "__new__";
+    const TRY_RAY_SESSION_KEY = "tryRaySessionId";
+    const TRY_RAY_LIMIT_KEY = "tryRayLimitReached";
 
-    const projectNameInput = document.getElementById("project-name");
-    const newProjectRowEl = document.getElementById("new-project-row");
-    const newProjectNameInput = document.getElementById("new-project-name");
-    const projectContextStatus = document.getElementById("project-context-status");
-
-    const fileInput = document.getElementById("schedule-file");
-    const analyzeBtn = document.getElementById("analyze-btn");
-    const statusEl = document.getElementById("upload-status");
-    const resultEl = document.getElementById("analysis-result");
-    const uploadPanelEl = document.getElementById("upload-panel");
-    const upgradePanelEl = document.getElementById("upgrade-panel");
+    function getTryRayUserId() {
+      let sessionId = localStorage.getItem(TRY_RAY_SESSION_KEY);
+      if (!sessionId) {
+        sessionId = `tryray-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        localStorage.setItem(TRY_RAY_SESSION_KEY, sessionId);
+      }
+      return sessionId;
+    }
 
     const chatHistoryEl = document.getElementById("chat-history");
     const chatInput = document.getElementById("chat-input");
     const sendChatBtn = document.getElementById("send-chat-btn");
     const downloadChatBtn = document.getElementById("download-chat-btn");
     const chatStatusEl = document.getElementById("chat-status");
+    const upgradePanelEl = document.getElementById("upgrade-panel");
+
+    const starterScheduleBtn = document.getElementById("starter-schedule-btn");
+    const identifyRisksBtn = document.getElementById("identify-risks-btn");
+    const nextStepsBtn = document.getElementById("next-steps-btn");
 
     const playIntroBtn = document.getElementById("play-intro-btn");
     const pauseIntroBtn = document.getElementById("pause-intro-btn");
@@ -396,24 +372,23 @@
     const rayAudioControls = document.getElementById("ray-audio-controls");
     const rayStartWrap = document.getElementById("ray-start-wrap");
 
-    let wixPlanName = "";
-    const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
-    const PRO_PLAN_NAMES = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
-
-    function getIntroStorageKey() {
-      const currentUserId = localStorage.getItem("wixMemberId") || "anonymous";
-      return `rayIntroPlayed_${currentUserId}`;
+    function maybeShowUpgradePanel() {
+      const limitReached = localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true";
+      if (upgradePanelEl) {
+        upgradePanelEl.style.display = limitReached ? "" : "none";
+      }
+      if (limitReached) {
+        chatInput.disabled = true;
+        sendChatBtn.disabled = true;
+      }
     }
 
-    function getIntroUrlForPlan(planName) {
-      return PRO_PLAN_NAMES.includes(planName) ? PRO_INTRO_URL : BASIC_INTRO_URL;
+    function getIntroStorageKey() {
+      return `tryRayIntroPlayed_${getTryRayUserId()}`;
     }
 
     function playWelcomeIntro() {
-      const introUrl = getIntroUrlForPlan(wixPlanName);
-      if (!introUrl) return;
-
-      introAudio.src = introUrl;
+      introAudio.src = BASIC_INTRO_URL;
       introAudio.play().catch((err) => {
         console.error("Intro audio could not play:", err);
       });
@@ -461,24 +436,6 @@
     pauseIntroBtn.addEventListener("click", pauseWelcomeIntro);
     stopIntroBtn.addEventListener("click", stopWelcomeIntro);
 
-    window.addEventListener("message", (event) => {
-      const data = event.data || {};
-      if (!data.planName) return;
-
-      wixPlanName = data.planName;
-      const uploadHidden = !uploadAllowedPlans.includes(wixPlanName);
-
-      if (uploadPanelEl) {
-        uploadPanelEl.style.display = uploadHidden ? "none" : "";
-      }
-
-      if (upgradePanelEl) {
-        upgradePanelEl.style.display = uploadHidden ? "" : "none";
-      }
-
-      maybePlayIntroOnce();
-    });
-
     function escapeHtml(text) {
       const div = document.createElement("div");
       div.textContent = text;
@@ -493,135 +450,7 @@
       chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
     }
 
-    function getSavedProjectNames() {
-      try {
-        const raw = localStorage.getItem(PROJECT_NAMES_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveProjectNames(names) {
-      localStorage.setItem(PROJECT_NAMES_KEY, JSON.stringify(names));
-    }
-
-    function renderProjectNameOptions(names = getSavedProjectNames()) {
-      projectNameInput.innerHTML = "";
-
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "";
-      defaultOption.textContent = "Select a project";
-      projectNameInput.appendChild(defaultOption);
-
-      names.forEach((name) => {
-        const option = document.createElement("option");
-        option.value = name;
-        option.textContent = name;
-        projectNameInput.appendChild(option);
-      });
-
-      const addNewOption = document.createElement("option");
-      addNewOption.value = NEW_PROJECT_SENTINEL;
-      addNewOption.textContent = "Add new project...";
-      projectNameInput.appendChild(addNewOption);
-
-      const savedProject = localStorage.getItem(LAST_PROJECT_KEY) || "";
-      if (savedProject && names.includes(savedProject)) {
-        projectNameInput.value = savedProject;
-      }
-    }
-
-    function addProjectNameToSavedList(name) {
-      const cleanName = (name || "").trim();
-      if (!cleanName) return;
-
-      const existing = getSavedProjectNames();
-      const alreadyExists = existing.some(
-        (p) => p.toLowerCase() === cleanName.toLowerCase()
-      );
-
-      if (!alreadyExists) {
-        existing.push(cleanName);
-        existing.sort((a, b) => a.localeCompare(b));
-        saveProjectNames(existing);
-      }
-
-      renderProjectNameOptions();
-    }
-
-    async function loadProjectsForUser() {
-      const currentUserId = getWixUserId();
-
-      if (!currentUserId) {
-        renderProjectNameOptions();
-        return;
-      }
-
-      try {
-        const res = await fetch(`${PROJECTS_URL}?userId=${encodeURIComponent(currentUserId)}`);
-        if (!res.ok) {
-          throw new Error(`Project load failed: ${res.status}`);
-        }
-
-        const data = await res.json();
-        const projectNames = Array.isArray(data.projects)
-          ? data.projects.map((p) => p.name).filter(Boolean)
-          : [];
-
-        if (projectNames.length) {
-          saveProjectNames(projectNames);
-          renderProjectNameOptions(projectNames);
-        } else {
-          renderProjectNameOptions();
-        }
-      } catch (err) {
-        console.error("Could not load project list:", err);
-        renderProjectNameOptions();
-      }
-    }
-
-    function getSelectedProjectName() {
-      const selected = projectNameInput.value.trim();
-      if (selected === NEW_PROJECT_SENTINEL) {
-        return newProjectNameInput.value.trim();
-      }
-      return selected;
-    }
-
-    function syncProjectInputMode() {
-      const isNewProject = projectNameInput.value === NEW_PROJECT_SENTINEL;
-      newProjectRowEl.style.display = isNewProject ? "" : "none";
-
-      if (!isNewProject) {
-        newProjectNameInput.value = "";
-      }
-
-      updateProjectContextStatus();
-    }
-
-    function updateProjectContextStatus() {
-      const projectName = getSelectedProjectName();
-
-      if (projectName) {
-        projectContextStatus.textContent = `Active project: ${projectName}`;
-      } else if (projectNameInput.value === NEW_PROJECT_SENTINEL) {
-        projectContextStatus.textContent = "Mode: Creating a new project";
-      } else {
-        projectContextStatus.textContent = "Mode: General project coaching";
-      }
-    }
-
-    function initializePage() {
-      loadProjectsForUser().finally(() => {
-        syncProjectInputMode();
-      });
-    }
-
     function downloadChatTranscript() {
-      const projectName = getSelectedProjectName() || "general";
-      const safeProjectName = projectName.replace(/[^a-z0-9-_]+/gi, "_");
       const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
 
       const lines = [];
@@ -638,8 +467,7 @@
       }
 
       const transcript = [
-        "Ray Chat Export",
-        `Project: ${projectName}`,
+        "Try Ray Chat Export",
         `Exported: ${new Date().toLocaleString()}`,
         "",
         ...lines
@@ -650,7 +478,7 @@
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = `ray-chat-${safeProjectName}-${timestamp}.txt`;
+      a.download = `try-ray-chat-${timestamp}.txt`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -659,98 +487,32 @@
       chatStatusEl.textContent = "Chat downloaded.";
     }
 
-    projectNameInput.addEventListener("change", () => {
-      const selected = projectNameInput.value.trim();
-
-      if (selected && selected !== NEW_PROJECT_SENTINEL) {
-        localStorage.setItem(LAST_PROJECT_KEY, selected);
-      } else {
-        localStorage.removeItem(LAST_PROJECT_KEY);
-      }
-
-      syncProjectInputMode();
-    });
-
-    newProjectNameInput.addEventListener("input", updateProjectContextStatus);
-
-    analyzeBtn.addEventListener("click", async () => {
-      const file = fileInput.files[0];
-      const projectName = getSelectedProjectName();
-
-      if (!projectName) {
-        statusEl.textContent = "Please select a project or add a new one before uploading a schedule.";
+    async function sendChatMessage(prefilledMessage) {
+      if (localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true") {
+        maybeShowUpgradePanel();
+        chatStatusEl.textContent = "You’ve reached the free preview limit.";
         return;
       }
 
-      if (!file) {
-        statusEl.textContent = "Please choose a CSV file first.";
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("schedule", file);
-      formData.append("userId", getWixUserId() || "anonymous");
-      formData.append("projectName", projectName);
-
-      analyzeBtn.disabled = true;
-      statusEl.textContent = "Uploading and analyzing your schedule...";
-      resultEl.textContent = "";
-
-      try {
-        const res = await fetch(UPLOAD_URL, {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!res.ok) {
-          const text = await res.text();
-          console.error("Upload error:", text);
-          statusEl.textContent = "There was an error analyzing the file. Please check that it's a CSV export.";
-          return;
-        }
-
-        const data = await res.json();
-
-        if (data.error) {
-          statusEl.textContent = data.error;
-          return;
-        }
-
-        statusEl.textContent = "Here’s Ray’s assessment of your schedule:";
-        resultEl.textContent = data.analysis || "No analysis returned.";
-        addProjectNameToSavedList(projectName);
-        localStorage.setItem(LAST_PROJECT_KEY, projectName);
-        renderProjectNameOptions();
-        projectNameInput.value = projectName;
-        syncProjectInputMode();
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "Something went wrong contacting the server. Please try again in a moment.";
-      } finally {
-        analyzeBtn.disabled = false;
-      }
-    });
-
-    async function sendChatMessage() {
-      const message = chatInput.value.trim();
-      const projectName = getSelectedProjectName();
-
+      const message = (prefilledMessage || chatInput.value || "").trim();
       if (!message) return;
 
       addChatMessage("user", message);
-      chatInput.value = "";
+      if (!prefilledMessage) {
+        chatInput.value = "";
+      }
+
       chatStatusEl.textContent = "Ray is thinking...";
       sendChatBtn.disabled = true;
 
       try {
-        const res = await fetch(CHAT_URL, {
+        const res = await fetch(TRY_CHAT_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userId: getWixUserId() || "anonymous",
-            projectName,
+            userId: getTryRayUserId(),
             message
           })
         });
@@ -764,22 +526,34 @@
         addChatMessage("assistant", data.reply || "No response.");
         chatStatusEl.textContent = "";
 
-        if (projectName) {
-          addProjectNameToSavedList(projectName);
-          localStorage.setItem(LAST_PROJECT_KEY, projectName);
-          renderProjectNameOptions();
-          projectNameInput.value = projectName;
-          syncProjectInputMode();
+        if (data.limitReached) {
+          localStorage.setItem(TRY_RAY_LIMIT_KEY, "true");
+          maybeShowUpgradePanel();
+          chatStatusEl.textContent = "You’ve reached the free preview limit.";
         }
       } catch (err) {
         console.error(err);
         chatStatusEl.textContent = "Chat failed. Please try again.";
       } finally {
-        sendChatBtn.disabled = false;
+        if (localStorage.getItem(TRY_RAY_LIMIT_KEY) !== "true") {
+          sendChatBtn.disabled = false;
+        }
       }
     }
 
-    sendChatBtn.addEventListener("click", sendChatMessage);
+    starterScheduleBtn.addEventListener("click", () => {
+      sendChatMessage("Create a simple starter project schedule for a typical 3-month project. Keep it practical and easy to follow.");
+    });
+
+    identifyRisksBtn.addEventListener("click", () => {
+      sendChatMessage("Help me identify the top risks for a typical project and how I should manage them.");
+    });
+
+    nextStepsBtn.addEventListener("click", () => {
+      sendChatMessage("I am starting a new project. What should I do first, and what should I do next?");
+    });
+
+    sendChatBtn.addEventListener("click", () => sendChatMessage());
     downloadChatBtn.addEventListener("click", downloadChatTranscript);
 
     chatInput.addEventListener("keydown", (e) => {
@@ -789,7 +563,9 @@
       }
     });
 
-    initializePage();
+    maybePlayIntroOnce();
+    maybeShowUpgradePanel();
+    addChatMessage("assistant", "Hi, I’m Ray. This is a free 3-question preview. Ask me about your project, timeline, risks, or next steps.");
   </script>
 </body>
 </html>
