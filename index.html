@@ -17,15 +17,44 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: #e5e7eb;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     #page-root {
       width: 100%;
-      max-width: 1100px;
+      max-width: 1300px;
+      margin: 0 auto;
       padding: 24px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 24px;
+      align-items: start;
+      box-sizing: border-box;
+    }
+
+    #ray-sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      position: sticky;
+      top: 24px;
+    }
+
+    #ray-image {
+      width: 220px;
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    #ray-audio-controls {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    #ray-main {
       display: flex;
       flex-direction: column;
       gap: 18px;
@@ -41,6 +70,7 @@
       padding: 14px 16px 16px;
       box-shadow: 0 14px 32px rgba(0, 0, 0, 0.6);
       font-size: 0.9rem;
+      box-sizing: border-box;
     }
 
     .upload-panel h2 {
@@ -75,13 +105,14 @@
       padding: 10px;
       color: #e5e7eb;
       font-size: 0.9rem;
+      box-sizing: border-box;
     }
 
     .upload-btn {
       border: none;
       border-radius: 999px;
       padding: 8px 16px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       cursor: pointer;
       background: linear-gradient(135deg, #0ea5e9, #2563eb);
       color: #f9fafb;
@@ -91,6 +122,12 @@
     .upload-btn:disabled {
       opacity: 0.6;
       cursor: default;
+    }
+
+    .upload-btn.secondary {
+      background: #020617;
+      border: 1px solid #1f2937;
+      color: #e5e7eb;
     }
 
     #upload-status,
@@ -121,7 +158,7 @@
     #chat-history {
       max-height: 320px;
       overflow-y: auto;
-      margin-bottom: 12px;
+      margin-top: 12px;
       padding: 10px;
       background: #020617;
       border: 1px solid #1f2937;
@@ -144,86 +181,112 @@
     .chat-assistant {
       background: #111827;
     }
+
+    @media (max-width: 900px) {
+      #page-root {
+        grid-template-columns: 1fr;
+      }
+
+      #ray-sidebar {
+        position: static;
+      }
+
+      #ray-image {
+        width: 180px;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="page-root">
-    <section class="upload-panel">
-      <h2>Project Context</h2>
-      <p>
-        Select an existing project or choose <strong>Add new project...</strong> to create one.
-        Leave it blank in chat if you want general project management coaching.
-      </p>
+    <div id="ray-sidebar">
+      <img
+        id="ray-image"
+        src="https://static.wixstatic.com/media/3cf059_a5281870c7f5443d8d98225203ffda7a~mv2.png"
+        alt="Ray"
+      />
 
-      <div class="upload-row">
-        <select id="project-name">
-          <option value="">Select a project</option>
-          <option value="__new__">Add new project...</option>
-        </select>
+      <div id="ray-audio-controls">
+        <button id="play-intro-btn" class="upload-btn secondary" type="button">Play</button>
+        <button id="pause-intro-btn" class="upload-btn secondary" type="button">Pause</button>
+        <button id="stop-intro-btn" class="upload-btn secondary" type="button">Stop</button>
       </div>
+    </div>
 
-      <div class="upload-row" id="new-project-row" style="display:none;">
-        <input
-          type="text"
-          id="new-project-name"
-          placeholder="Enter new project name"
-        />
+    <div id="ray-main">
+      <section class="upload-panel">
+        <h2>Project Context</h2>
+        <p>
+          Select an existing project or choose <strong>Add new project...</strong> to create one.
+          Leave it blank if you want general project management coaching.
+        </p>
+
+        <div class="upload-row">
+          <select id="project-name">
+            <option value="">Select a project</option>
+            <option value="__new__">Add new project...</option>
+          </select>
+        </div>
+
+        <div class="upload-row" id="new-project-row" style="display:none;">
+          <input
+            type="text"
+            id="new-project-name"
+            placeholder="Enter new project name"
+          />
+        </div>
+
+        <div id="project-context-status"></div>
+      </section>
+
+      <section class="upload-panel">
+        <h2>Chat with Ray</h2>
+        <p>
+          Ask Ray about risks, issues, milestones, planning, priorities, and next steps.
+        </p>
+
+        <div class="upload-row">
+          <input
+            type="text"
+            id="chat-input"
+            placeholder="Ask Ray a question..."
+          />
+          <button id="send-chat-btn" class="upload-btn">Send</button>
+        </div>
+
+        <div id="chat-status"></div>
+        <div id="chat-history"></div>
+      </section>
+
+      <section class="upload-panel" id="upload-panel">
+        <h2>Upload your project schedule as a CSV</h2>
+        <p>
+          Ray can analyze your schedule in detail and highlight risks, identify issues, and recommend specific actions to keep your project on track.
+        </p>
+
+        <div class="upload-row">
+          <input type="file" id="schedule-file" accept=".csv" />
+          <button id="analyze-btn" class="upload-btn">Analyze schedule</button>
+        </div>
+
+        <div id="upload-status"></div>
+        <div id="analysis-result"></div>
+      </section>
+
+      <div id="upgrade-panel" class="upload-panel" style="display:none;">
+        <h2>Want deeper project insight?</h2>
+        <p>
+          Upgrade to <strong>Ray Pro Monthly</strong> to unlock file uploads, schedule analysis, and a more personalized coaching experience.
+          Use coupon code <strong>B2PUpgrade</strong> to get <strong>$12 off your first Ray Pro Monthly purchase</strong>.
+          <a
+            id="upgrade-link"
+            href="https://www.projectpilot.ai/pricing-plans/list"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="color:#38bdf8;"
+          >Explore plans and upgrade</a>
+        </p>
       </div>
-
-      <div id="project-context-status"></div>
-      <div class="upload-row" style="justify-content:flex-start;">
-  <button id="replay-intro-btn" class="upload-btn" type="button">Replay welcome message</button>
-</div>
-    </section>
-
-    <section class="upload-panel">
-      <h2>Chat with Ray</h2>
-      <p>
-        Ask Ray about your schedule, risks, milestones, issues, owners, and next steps.
-      </p>
-
-      <div id="chat-history"></div>
-
-      <div class="upload-row">
-        <input
-          type="text"
-          id="chat-input"
-          placeholder="Ask Ray a question..."
-        />
-        <button id="send-chat-btn" class="upload-btn">Send</button>
-      </div>
-
-      <div id="chat-status"></div>
-    </section>
-
-    <section class="upload-panel" id="upload-panel">
-      <h2>Upload your project schedule as a CSV</h2>
-      <p>
-       Export your project schedule as a <strong>CSV</strong> (from MS Project, Smartsheet, Excel, etc.).  Ray can analyze your schedule in detail and highlight risks, identify issues, and recommend specific actions to keep your project on track.
-      </p>
-
-      <div class="upload-row">
-        <input type="file" id="schedule-file" accept=".csv" />
-        <button id="analyze-btn" class="upload-btn">Analyze schedule</button>
-      </div>
-
-      <div id="upload-status"></div>
-      <div id="analysis-result"></div>
-    </section>
-
-    <div id="upgrade-panel" class="upload-panel" style="display:none;">
-      <h2>Want deeper project insight?</h2>
-      <p>
-        Upgrade to <strong>Ray Pro Monthly</strong> to unlock file uploads, schedule analysis, and a more personalized coaching experience.
-        Use coupon code <strong>B2PUpgrade</strong> to get <strong>$12 off your first Ray Pro Monthly purchase</strong>.
-        <a
-          id="upgrade-link"
-          href="https://www.projectpilot.ai/pricing-plans/list"
-          target="_blank"
-          rel="noopener noreferrer"
-          style="color:#38bdf8;"
-        >Explore plans and upgrade</a>
-      </p>
     </div>
   </div>
 
@@ -240,7 +303,7 @@
     const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
     const CHAT_URL = `${BACKEND_BASE}/api/chat`;
     const PROJECTS_URL = `${BACKEND_BASE}/api/projects`;
-    
+
     const BASIC_INTRO_URL = "https://static.wixstatic.com/mp3/3cf059_47be87100f664ac69dd5fdb4a271e823.mp3";
     const PRO_INTRO_URL = "https://static.wixstatic.com/mp3/3cf059_7e5830d423f94f9ebfb8b14b9fc112a5.mp3";
 
@@ -259,53 +322,76 @@
     const resultEl = document.getElementById("analysis-result");
     const uploadPanelEl = document.getElementById("upload-panel");
     const upgradePanelEl = document.getElementById("upgrade-panel");
-    const replayIntroBtn = document.getElementById("replay-intro-btn");
-    const introAudio = new Audio();
 
     const chatHistoryEl = document.getElementById("chat-history");
     const chatInput = document.getElementById("chat-input");
     const sendChatBtn = document.getElementById("send-chat-btn");
     const chatStatusEl = document.getElementById("chat-status");
 
+    const playIntroBtn = document.getElementById("play-intro-btn");
+    const pauseIntroBtn = document.getElementById("pause-intro-btn");
+    const stopIntroBtn = document.getElementById("stop-intro-btn");
+    const introAudio = new Audio();
+
     let wixPlanName = "";
     const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
     let uploadHidden = true;
 
     const BASIC_PLAN_NAMES = ["Ray Coach", "Temp Ray Access - Basic"];
-const PRO_PLAN_NAMES = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
+    const PRO_PLAN_NAMES = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
 
-function getIntroStorageKey() {
-  return `rayIntroPlayed_${userId || "anonymous"}`;
-}
+    function getIntroStorageKey() {
+      return `rayIntroPlayed_${userId || "anonymous"}`;
+    }
 
-function getIntroUrlForPlan(planName) {
-  return PRO_PLAN_NAMES.includes(planName) ? PRO_INTRO_URL : BASIC_INTRO_URL;
-}
+    function getIntroUrlForPlan(planName) {
+      return PRO_PLAN_NAMES.includes(planName) ? PRO_INTRO_URL : BASIC_INTRO_URL;
+    }
+
     function playWelcomeIntro() {
-  const introUrl = getIntroUrlForPlan(wixPlanName);
-  if (!introUrl) return;
+      const introUrl = getIntroUrlForPlan(wixPlanName);
+      if (!introUrl) return;
 
-  introAudio.pause();
-  introAudio.currentTime = 0;
-  introAudio.src = introUrl;
-  introAudio.play().catch((err) => {
-    console.error("Intro audio could not play:", err);
-  });
-}
+      introAudio.src = introUrl;
+      introAudio.play().catch((err) => {
+        console.error("Intro audio could not play:", err);
+      });
+    }
 
-function maybePlayIntroOnce() {
-  const introKey = getIntroStorageKey();
-  const alreadyPlayed = localStorage.getItem(introKey) === "true";
+    function pauseWelcomeIntro() {
+      introAudio.pause();
+    }
 
-  if (alreadyPlayed) return;
+    function stopWelcomeIntro() {
+      introAudio.pause();
+      introAudio.currentTime = 0;
+    }
 
-  playWelcomeIntro();
-  localStorage.setItem(introKey, "true");
-}
-    
-replayIntroBtn.addEventListener("click", () => {
-  playWelcomeIntro();
-});
+    function maybePlayIntroOnce() {
+      const introKey = getIntroStorageKey();
+      const alreadyPlayed = localStorage.getItem(introKey) === "true";
+
+      if (alreadyPlayed) return;
+
+      chatStatusEl.textContent = "Welcome! Use the play button on the left to hear a quick introduction from Ray.";
+    }
+
+    playIntroBtn.addEventListener("click", () => {
+      playWelcomeIntro();
+      localStorage.setItem(getIntroStorageKey(), "true");
+      if (chatStatusEl.textContent.startsWith("Welcome!")) {
+        chatStatusEl.textContent = "";
+      }
+    });
+
+    pauseIntroBtn.addEventListener("click", () => {
+      pauseWelcomeIntro();
+    });
+
+    stopIntroBtn.addEventListener("click", () => {
+      stopWelcomeIntro();
+    });
+
     window.addEventListener("message", (event) => {
       const data = event.data || {};
 
@@ -321,11 +407,9 @@ replayIntroBtn.addEventListener("click", () => {
       if (upgradePanelEl) {
         upgradePanelEl.style.display = uploadHidden ? "" : "none";
       }
+
+      maybePlayIntroOnce();
     });
-   replayIntroBtn.addEventListener("click", () => {
-  playWelcomeIntro();
-});
-    
 
     function escapeHtml(text) {
       const div = document.createElement("div");
