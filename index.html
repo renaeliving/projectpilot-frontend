@@ -66,30 +66,27 @@
     }
 
     .audio-icon-btn {
-      width: 44px;
-      height: 44px;
-      border: none;
+      width: 20px;
+      height: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 999px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: 0.72rem;
       cursor: pointer;
       color: white;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+      background: rgba(255, 255, 255, .08);
+      box-shadow: none
+      padding: 0;
+      backdrop-filter: blur(4px);
     }
 
-    .audio-icon-btn.play {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-    }
-
-    .audio-icon-btn.pause {
-      background: linear-gradient(135deg, #64748b, #475569);
-    }
-
-    .audio-icon-btn.stop {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
+   .audio-icon-btn.play,
+.audio-icon-btn.pause,
+.audio-icon-btn.stop {
+  background: rgba(255, 255, 255, 0.08);
+}
 
     .audio-icon-btn:hover {
       transform: translateY(-1px);
@@ -181,6 +178,16 @@
       color: #9ca3af;
       min-height: 1.2em;
     }
+    .tiny-chat-btn {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e5e7eb;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
 
     #project-context-status {
       margin-top: 8px;
@@ -263,30 +270,30 @@
     </div>
 
     <div id="ray-main">
-      <section class="upload-panel">
-        <h2>Project Context</h2>
-        <p>
-          Select an existing project or choose <strong>Add new project...</strong> to create one.
-          Leave it blank if you want general project management coaching.
-        </p>
+     <section class="upload-panel">
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px;">
+    <div>
+      <h2>Chat with Ray</h2>
+      <p>
+        Ask Ray about risks, issues, milestones, planning, priorities, and next steps.
+      </p>
+    </div>
 
-        <div class="upload-row">
-          <select id="project-name">
-            <option value="">Select a project</option>
-            <option value="__new__">Add new project...</option>
-          </select>
-        </div>
+    <button id="download-chat-btn" class="tiny-chat-btn" type="button">Download</button>
+  </div>
 
-        <div class="upload-row" id="new-project-row" style="display:none;">
-          <input
-            type="text"
-            id="new-project-name"
-            placeholder="Enter new project name"
-          />
-        </div>
+  <div class="upload-row">
+    <input
+      type="text"
+      id="chat-input"
+      placeholder="Ask Ray a question..."
+    />
+    <button id="send-chat-btn" class="upload-btn">Send</button>
+  </div>
 
-        <div id="project-context-status"></div>
-      </section>
+  <div id="chat-status"></div>
+  <div id="chat-history"></div>
+</section>
 
       <section class="upload-panel">
         <h2>Chat with Ray</h2>
