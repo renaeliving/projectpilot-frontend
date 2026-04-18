@@ -41,7 +41,7 @@
     }
 
     #ray-image {
-      width: 300px;
+      width: 350px;
       max-width: 100%;
       height: auto;
       display: block;
@@ -53,6 +53,16 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+    #ray-start-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+#start-intro-btn {
+  text-align: center;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+}
 
     #ray-main {
       display: flex;
@@ -206,11 +216,15 @@
         alt="Ray"
       />
 
-      <div id="ray-audio-controls">
-        <button id="play-intro-btn" class="upload-btn secondary" type="button">Play</button>
-        <button id="pause-intro-btn" class="upload-btn secondary" type="button">Pause</button>
-        <button id="stop-intro-btn" class="upload-btn secondary" type="button">Stop</button>
-      </div>
+    <div id="ray-start-wrap">
+  <button id="start-intro-btn" class="upload-btn" type="button">New here? Click to meet Ray</button>
+</div>
+
+<div id="ray-audio-controls" style="display:none;">
+  <button id="play-intro-btn" class="upload-btn secondary" type="button">Play</button>
+  <button id="pause-intro-btn" class="upload-btn secondary" type="button">Pause</button>
+  <button id="stop-intro-btn" class="upload-btn secondary" type="button">Stop</button>
+</div>
     </div>
 
     <div id="ray-main">
@@ -330,8 +344,11 @@
 
     const playIntroBtn = document.getElementById("play-intro-btn");
     const pauseIntroBtn = document.getElementById("pause-intro-btn");
+    const startIntroBtn = document.getElementById("start-intro-btn");
     const stopIntroBtn = document.getElementById("stop-intro-btn");
     const introAudio = new Audio();
+    const rayAudioControls = document.getElementById("ray-audio-controls");
+    const rayStartWrap = document.getElementById("ray-start-wrap");
 
     let wixPlanName = "";
     const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
@@ -367,22 +384,38 @@
       introAudio.currentTime = 0;
     }
 
-    function maybePlayIntroOnce() {
-      const introKey = getIntroStorageKey();
-      const alreadyPlayed = localStorage.getItem(introKey) === "true";
+  function maybePlayIntroOnce() {
+  const introKey = getIntroStorageKey();
+  const alreadyPlayed = localStorage.getItem(introKey) === "true";
 
-      if (alreadyPlayed) return;
+  if (alreadyPlayed) {
+    if (rayStartWrap) rayStartWrap.style.display = "none";
+    if (rayAudioControls) rayAudioControls.style.display = "flex";
+    return;
+  }
 
-      chatStatusEl.textContent = "Welcome! Use the play button on the left to hear a quick introduction from Ray.";
-    }
+  if (rayStartWrap) rayStartWrap.style.display = "flex";
+  if (rayAudioControls) rayAudioControls.style.display = "none";
+  chatStatusEl.textContent = "New here? Click the button next to Ray to hear a quick welcome message.";
+}
 
-    playIntroBtn.addEventListener("click", () => {
-      playWelcomeIntro();
-      localStorage.setItem(getIntroStorageKey(), "true");
-      if (chatStatusEl.textContent.startsWith("Welcome!")) {
-        chatStatusEl.textContent = "";
-      }
-    });
+   function showAudioControls() {
+  if (rayStartWrap) rayStartWrap.style.display = "none";
+  if (rayAudioControls) rayAudioControls.style.display = "flex";
+}
+
+startIntroBtn.addEventListener("click", () => {
+  showAudioControls();
+  playWelcomeIntro();
+  localStorage.setItem(getIntroStorageKey(), "true");
+  if (chatStatusEl.textContent.startsWith("Welcome!")) {
+    chatStatusEl.textContent = "";
+  }
+});
+
+playIntroBtn.addEventListener("click", () => {
+  playWelcomeIntro();
+});
 
     pauseIntroBtn.addEventListener("click", () => {
       pauseWelcomeIntro();
