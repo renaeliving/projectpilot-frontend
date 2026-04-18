@@ -514,48 +514,79 @@
       });
     }
 
-    function initSpeechRecognition() {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  function initSpeechRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-      if (!SR) {
-        if (voiceChatBtn) {
-          voiceChatBtn.disabled = true;
-          voiceChatBtn.textContent = "Voice unsupported";
-        }
-        return;
-      }
-
-      recognition = new SR();
-      recognition.lang = "en-US";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onstart = function () {
-        recognizing = true;
-        if (voiceChatBtn) voiceChatBtn.textContent = "Listening...";
-        chatStatusEl.textContent = "Listening...";
-      };
-
-      recognition.onend = function () {
-        recognizing = false;
-        if (voiceChatBtn) voiceChatBtn.textContent = "Talk";
-        if (chatStatusEl.textContent === "Listening...") {
-          chatStatusEl.textContent = "";
-        }
-      };
-
-      recognition.onresult = function (event) {
-        const transcript = (event.results[0][0].transcript || "").trim();
-        if (!transcript) return;
-        chatInput.value = transcript;
-        sendChatMessage();
-      };
-
-      recognition.onerror = function (event) {
-        console.error("Speech recognition error:", event.error);
-        chatStatusEl.textContent = "Voice input failed. Please try again.";
-      };
+  if (!SR) {
+    if (voiceChatBtn) {
+      voiceChatBtn.disabled = true;
+      voiceChatBtn.textContent = "Voice unsupported";
     }
+    chatStatusEl.textContent = "Voice input is not supported in this browser.";
+    return;
+  }
+
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.continuous = false;
+
+  recognition.onstart = function () {
+    recognizing = true;
+    if (voiceChatBtn) voiceChatBtn.textContent = "Listening...";
+    chatStatusEl.textContent = "Listening...";
+  };
+
+  recognition.onend = function () {
+    recognizing = false;
+    if (voiceChatBtn) voiceChatBtn.textContent = "Talk";
+    if (chatStatusEl.textContent === "Listening...") {
+      chatStatusEl.textContent = "";
+    }
+  };
+
+  recognition.onresult = function (event) {
+    const transcript = (event.results?.[0]?.[0]?.transcript || "").trim();
+    if (!transcript) return;
+    chatInput.value = transcript;
+    sendChatMessage();
+  };
+
+  recognition.onerror = function (event) {
+    console.error("Speech recognition error:", event.error);
+
+    if (voiceChatBtn) {
+      voiceChatBtn.textContent = "Talk";
+    }
+
+    recognizing = false;
+
+    switch (event.error) {
+      case "not-allowed":
+        chatStatusEl.textContent = "Microphone permission was blocked. Please allow microphone access in your browser.";
+        break;
+      case "service-not-allowed":
+        chatStatusEl.textContent = "Voice input is not allowed in this browser.";
+        break;
+      case "no-speech":
+        chatStatusEl.textContent = "I didn’t hear anything. Please try again.";
+        break;
+      case "audio-capture":
+        chatStatusEl.textContent = "No microphone was found or your microphone is unavailable.";
+        break;
+      case "network":
+        chatStatusEl.textContent = "Voice input hit a network error. Please try again.";
+        break;
+      case "aborted":
+        chatStatusEl.textContent = "Voice input was stopped.";
+        break;
+      default:
+        chatStatusEl.textContent = `Voice input failed: ${event.error}`;
+        break;
+    }
+  };
+}
 
     function maybePlayIntroOnce() {
       const introKey = getIntroStorageKey();
