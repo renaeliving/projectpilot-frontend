@@ -66,8 +66,8 @@
     }
 
     .audio-icon-btn {
-      width: 20px;
-      height: 20px;
+      width: 28px;
+      height: 28px;
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 999px;
       display: inline-flex;
@@ -76,17 +76,17 @@
       font-size: 0.72rem;
       cursor: pointer;
       color: white;
-      background: rgba(255, 255, 255, .08);
-      box-shadow: none
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: none;
       padding: 0;
       backdrop-filter: blur(4px);
     }
 
-   .audio-icon-btn.play,
-.audio-icon-btn.pause,
-.audio-icon-btn.stop {
-  background: rgba(255, 255, 255, 0.08);
-}
+    .audio-icon-btn.play,
+    .audio-icon-btn.pause,
+    .audio-icon-btn.stop {
+      background: rgba(255, 255, 255, 0.08);
+    }
 
     .audio-icon-btn:hover {
       transform: translateY(-1px);
@@ -172,22 +172,23 @@
       color: #e5e7eb;
     }
 
+    .tiny-chat-btn {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+      color: #e5e7eb;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
     #upload-status,
     #chat-status {
       font-size: 0.8rem;
       color: #9ca3af;
       min-height: 1.2em;
     }
-    .tiny-chat-btn {
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
-  color: #e5e7eb;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 0.72rem;
-  cursor: pointer;
-  white-space: nowrap;
-}
 
     #project-context-status {
       margin-top: 8px;
@@ -270,36 +271,42 @@
     </div>
 
     <div id="ray-main">
-     <section class="upload-panel">
-  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px;">
-    <div>
-      <h2>Chat with Ray</h2>
-      <p>
-        Ask Ray about risks, issues, milestones, planning, priorities, and next steps.
-      </p>
-    </div>
+      <section class="upload-panel">
+        <h2>Project Context</h2>
+        <p>
+          Select an existing project or choose <strong>Add new project...</strong> to create one.
+          Leave it blank if you want general project management coaching.
+        </p>
 
-    <button id="download-chat-btn" class="tiny-chat-btn" type="button">Download</button>
-  </div>
+        <div class="upload-row">
+          <select id="project-name">
+            <option value="">Select a project</option>
+            <option value="__new__">Add new project...</option>
+          </select>
+        </div>
 
-  <div class="upload-row">
-    <input
-      type="text"
-      id="chat-input"
-      placeholder="Ask Ray a question..."
-    />
-    <button id="send-chat-btn" class="upload-btn">Send</button>
-  </div>
+        <div class="upload-row" id="new-project-row" style="display:none;">
+          <input
+            type="text"
+            id="new-project-name"
+            placeholder="Enter new project name"
+          />
+        </div>
 
-  <div id="chat-status"></div>
-  <div id="chat-history"></div>
-</section>
+        <div id="project-context-status"></div>
+      </section>
 
       <section class="upload-panel">
-        <h2>Chat with Ray</h2>
-        <p>
-          Ask Ray about risks, issues, milestones, planning, priorities, and next steps.
-        </p>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px;">
+          <div>
+            <h2>Chat with Ray</h2>
+            <p>
+              Ask Ray about risks, issues, milestones, planning, priorities, and next steps.
+            </p>
+          </div>
+
+          <button id="download-chat-btn" class="tiny-chat-btn" type="button">Download</button>
+        </div>
 
         <div class="upload-row">
           <input
@@ -308,7 +315,6 @@
             placeholder="Ask Ray a question..."
           />
           <button id="send-chat-btn" class="upload-btn">Send</button>
-          <button id="download-chat-btn" class="upload-btn secondary" type="button">Download chat</button>
         </div>
 
         <div id="chat-status"></div>
@@ -349,12 +355,8 @@
 
   <script>
     function getWixUserId() {
-      const wixUserId = localStorage.getItem("wixMemberId");
-      return wixUserId || "";
+      return localStorage.getItem("wixMemberId") || "";
     }
-
-    const userId = getWixUserId();
-    console.log("Ray Wix userId:", userId);
 
     const BACKEND_BASE = "https://projectpilot-backend-zkad.onrender.com";
     const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
@@ -396,8 +398,6 @@
 
     let wixPlanName = "";
     const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
-    let uploadHidden = true;
-
     const PRO_PLAN_NAMES = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
 
     function getIntroStorageKey() {
@@ -457,25 +457,16 @@
       }
     });
 
-    playIntroBtn.addEventListener("click", () => {
-      playWelcomeIntro();
-    });
-
-    pauseIntroBtn.addEventListener("click", () => {
-      pauseWelcomeIntro();
-    });
-
-    stopIntroBtn.addEventListener("click", () => {
-      stopWelcomeIntro();
-    });
+    playIntroBtn.addEventListener("click", playWelcomeIntro);
+    pauseIntroBtn.addEventListener("click", pauseWelcomeIntro);
+    stopIntroBtn.addEventListener("click", stopWelcomeIntro);
 
     window.addEventListener("message", (event) => {
       const data = event.data || {};
-
       if (!data.planName) return;
 
       wixPlanName = data.planName;
-      uploadHidden = !uploadAllowedPlans.includes(wixPlanName);
+      const uploadHidden = !uploadAllowedPlans.includes(wixPlanName);
 
       if (uploadPanelEl) {
         uploadPanelEl.style.display = uploadHidden ? "none" : "";
@@ -561,7 +552,7 @@
     }
 
     async function loadProjectsForUser() {
-      const currentUserId = localStorage.getItem("wixMemberId") || "";
+      const currentUserId = getWixUserId();
 
       if (!currentUserId) {
         renderProjectNameOptions();
@@ -593,11 +584,9 @@
 
     function getSelectedProjectName() {
       const selected = projectNameInput.value.trim();
-
       if (selected === NEW_PROJECT_SENTINEL) {
         return newProjectNameInput.value.trim();
       }
-
       return selected;
     }
 
@@ -627,11 +616,6 @@
     function initializePage() {
       loadProjectsForUser().finally(() => {
         syncProjectInputMode();
-
-        if (uploadHidden) {
-          if (uploadPanelEl) uploadPanelEl.style.display = "none";
-          if (upgradePanelEl) upgradePanelEl.style.display = "";
-        }
       });
     }
 
@@ -687,9 +671,7 @@
       syncProjectInputMode();
     });
 
-    newProjectNameInput.addEventListener("input", () => {
-      updateProjectContextStatus();
-    });
+    newProjectNameInput.addEventListener("input", updateProjectContextStatus);
 
     analyzeBtn.addEventListener("click", async () => {
       const file = fileInput.files[0];
@@ -707,7 +689,7 @@
 
       const formData = new FormData();
       formData.append("schedule", file);
-      formData.append("userId", localStorage.getItem("wixMemberId") || "anonymous");
+      formData.append("userId", getWixUserId() || "anonymous");
       formData.append("projectName", projectName);
 
       analyzeBtn.disabled = true;
@@ -723,8 +705,7 @@
         if (!res.ok) {
           const text = await res.text();
           console.error("Upload error:", text);
-          statusEl.textContent =
-            "There was an error analyzing the file. Please check that it's a CSV export.";
+          statusEl.textContent = "There was an error analyzing the file. Please check that it's a CSV export.";
           return;
         }
 
@@ -744,8 +725,7 @@
         syncProjectInputMode();
       } catch (err) {
         console.error(err);
-        statusEl.textContent =
-          "Something went wrong contacting the server. Please try again in a moment.";
+        statusEl.textContent = "Something went wrong contacting the server. Please try again in a moment.";
       } finally {
         analyzeBtn.disabled = false;
       }
@@ -769,7 +749,7 @@
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userId: localStorage.getItem("wixMemberId") || "anonymous",
+            userId: getWixUserId() || "anonymous",
             projectName,
             message
           })
