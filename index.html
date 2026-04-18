@@ -171,6 +171,9 @@
       </div>
 
       <div id="project-context-status"></div>
+      <div class="upload-row" style="justify-content:flex-start;">
+  <button id="replay-intro-btn" class="upload-btn" type="button">Replay welcome message</button>
+</div>
     </section>
 
     <section class="upload-panel">
@@ -237,6 +240,9 @@
     const UPLOAD_URL = `${BACKEND_BASE}/api/upload-schedule`;
     const CHAT_URL = `${BACKEND_BASE}/api/chat`;
     const PROJECTS_URL = `${BACKEND_BASE}/api/projects`;
+    
+    const BASIC_INTRO_URL = "https://static.wixstatic.com/mp3/3cf059_47be87100f664ac69dd5fdb4a271e823.mp3";
+    const PRO_INTRO_URL = "https://static.wixstatic.com/mp3/3cf059_7e5830d423f94f9ebfb8b14b9fc112a5.mp3";
 
     const PROJECT_NAMES_KEY = "rayProjectNames";
     const LAST_PROJECT_KEY = "rayLastProjectName";
@@ -253,6 +259,8 @@
     const resultEl = document.getElementById("analysis-result");
     const uploadPanelEl = document.getElementById("upload-panel");
     const upgradePanelEl = document.getElementById("upgrade-panel");
+    const replayIntroBtn = document.getElementById("replay-intro-btn");
+    const introAudio = new Audio();
 
     const chatHistoryEl = document.getElementById("chat-history");
     const chatInput = document.getElementById("chat-input");
@@ -263,6 +271,41 @@
     const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
     let uploadHidden = true;
 
+    const BASIC_PLAN_NAMES = ["Ray Coach", "Temp Ray Access - Basic"];
+const PRO_PLAN_NAMES = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
+
+function getIntroStorageKey() {
+  return `rayIntroPlayed_${userId || "anonymous"}`;
+}
+
+function getIntroUrlForPlan(planName) {
+  return PRO_PLAN_NAMES.includes(planName) ? PRO_INTRO_URL : BASIC_INTRO_URL;
+}
+    function playWelcomeIntro() {
+  const introUrl = getIntroUrlForPlan(wixPlanName);
+  if (!introUrl) return;
+
+  introAudio.pause();
+  introAudio.currentTime = 0;
+  introAudio.src = introUrl;
+  introAudio.play().catch((err) => {
+    console.error("Intro audio could not play:", err);
+  });
+}
+
+function maybePlayIntroOnce() {
+  const introKey = getIntroStorageKey();
+  const alreadyPlayed = localStorage.getItem(introKey) === "true";
+
+  if (alreadyPlayed) return;
+
+  playWelcomeIntro();
+  localStorage.setItem(introKey, "true");
+}
+    
+replayIntroBtn.addEventListener("click", () => {
+  playWelcomeIntro();
+});
     window.addEventListener("message", (event) => {
       const data = event.data || {};
 
@@ -279,6 +322,10 @@
         upgradePanelEl.style.display = uploadHidden ? "" : "none";
       }
     });
+   replayIntroBtn.addEventListener("click", () => {
+  playWelcomeIntro();
+});
+    
 
     function escapeHtml(text) {
       const div = document.createElement("div");
