@@ -278,20 +278,17 @@
           Leave it blank if you want general project management coaching.
         </p>
 
-        <div class="upload-row">
-          <select id="project-name">
-            <option value="">Select a project</option>
-            <option value="__new__">Add new project...</option>
-          </select>
-        </div>
-
-        <div class="upload-row" id="new-project-row" style="display:none;">
-          <input
-            type="text"
-            id="new-project-name"
-            placeholder="Enter new project name"
-          />
-        </div>
+       <div class="upload-row">
+  <input
+    type="text"
+    id="chat-input"
+    placeholder="Ask Ray a question..."
+  />
+  <button id="voice-chat-btn" class="upload-btn secondary" type="button" style="display:none;">Talk</button>
+  <button id="read-reply-btn" class="upload-btn secondary" type="button" style="display:none;" disabled>Read to me</button>
+  <button id="stop-reply-btn" class="upload-btn secondary" type="button" style="display:none;" disabled>Stop</button>
+  <button id="send-chat-btn" class="upload-btn">Send</button>
+</div>
 
         <div id="project-context-status"></div>
       </section>
@@ -383,11 +380,20 @@
     const upgradePanelEl = document.getElementById("upgrade-panel");
 
     const chatHistoryEl = document.getElementById("chat-history");
-    const chatInput = document.getElementById("chat-input");
-    const sendChatBtn = document.getElementById("send-chat-btn");
-    const downloadChatBtn = document.getElementById("download-chat-btn");
-    const chatStatusEl = document.getElementById("chat-status");
+const chatInput = document.getElementById("chat-input");
+const sendChatBtn = document.getElementById("send-chat-btn");
+const voiceChatBtn = document.getElementById("voice-chat-btn");
+const readReplyBtn = document.getElementById("read-reply-btn");
+const stopReplyBtn = document.getElementById("stop-reply-btn");
+const downloadChatBtn = document.getElementById("download-chat-btn");
+const chatStatusEl = document.getElementById("chat-status");
 
+let latestReplyAudioBase64 = null;
+let latestReplyText = "";
+let currentReplyAudio = null;
+let recognition = null;
+let recognizing = false;
+    
     const playIntroBtn = document.getElementById("play-intro-btn");
     const pauseIntroBtn = document.getElementById("pause-intro-btn");
     const startIntroBtn = document.getElementById("start-intro-btn");
@@ -427,6 +433,121 @@
       introAudio.pause();
       introAudio.currentTime = 0;
     }
+    function isProPlan(planName) {
+  return PRO_PLAN_NAMES.includes(planName);
+}
+
+function updateVoiceFeatureVisibility() {
+  const enabled = isProPlan(wixPlanName);
+
+  if (voiceChatBtn) voiceChatBtn.style.display = enabled ? "" : "none";
+  if (readReplyBtn) readReplyBtn.style.display = enabled ? "" : "none";
+  if (stopReplyBtn) stopReplyBtn.style.display = enabled ? "" : "none";
+
+  if (!enabled) {
+    if (voiceChatBtn) voiceChatBtn.disabled = true;
+    if (readReplyBtn) readReplyBtn.disabled = true;
+    if (stopReplyBtn) stopReplyBtn.disabled = true;
+  } else {
+    if (voiceChatBtn) voiceChatBtn.disabled = false;
+  }
+}
+
+function base64ToAudioUrl(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  const blob = new Blob([bytes], { type: "audio/mpeg" });
+  return URL.createObjectURL(blob);
+}
+
+function stopReplyAudio() {
+  if (currentReplyAudio) {
+    currentReplyAudio.pause();
+    currentReplyAudio.currentTime = 0;
+  }
+  stopReplyBtn.disabled = true;
+}
+
+function playLatestReplyAudio() {
+  if (!latestReplyAudioBase64) {
+    chatStatusEl.textContent = "No audio is available for the latest reply.";
+    return;
+  }
+
+  stopReplyAudio();
+
+  const audioUrl = base64ToAudioUrl(latestReplyAudioBase64);
+  currentReplyAudio = new Audio(audioUrl);
+
+  currentReplyAudio.onplay = () => {
+    chatStatusEl.textContent = "Ray is reading the latest reply...";
+    stopReplyBtn.disabled = false;
+  };
+
+  currentReplyAudio.onended = () => {
+    chatStatusEl.textContent = "";
+    stopReplyBtn.disabled = true;
+    URL.revokeObjectURL(audioUrl);
+  };
+
+  currentReplyAudio.onerror = () => {
+    chatStatusEl.textContent = "Could not play Ray's audio reply.";
+    stopReplyBtn.disabled = true;
+    URL.revokeObjectURL(audioUrl);
+  };
+
+  currentReplyAudio.play().catch((err) => {
+    console.error("Audio playback error:", err);
+    chatStatusEl.textContent = "Audio playback was blocked or failed.";
+    stopReplyBtn.disabled = true;
+    URL.revokeObjectURL(audioUrl);
+  });
+}
+    function initSpeechRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SR) {
+    if (voiceChatBtn) {
+      voiceChatBtn.disabled = true;
+      voiceChatBtn.textContent = "Voice unsupported";
+    }
+    return;
+  }
+
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = function () {
+    recognizing = true;
+    if (voiceChatBtn) voiceChatBtn.textContent = "Listening...";
+    chatStatusEl.textContent = "Listening...";
+  };
+
+  recognition.onend = function () {
+    recognizing = false;
+    if (voiceChatBtn) voiceChatBtn.textContent = "Talk";
+    if (chatStatusEl.textContent === "Listening...") {
+      chatStatusEl.textContent = "";
+    }
+  };
+
+  recognition.onresult = function (event) {
+    const transcript = (event.results[0][0].transcript || "").trim();
+    if (!transcript) return;
+    chatInput.value = transcript;
+    sendChatMessage();
+  };
+
+  recognition.onerror = function (event) {
+    console.error("Speech recognition error:", event.error);
+    chatStatusEl.textContent = "Voice input failed. Please try again.";
+  };
+}
 
     function maybePlayIntroOnce() {
       const introKey = getIntroStorageKey();
@@ -477,6 +598,7 @@
       }
 
       maybePlayIntroOnce();
+      updateVoiceFeatureVisibility();
     });
 
     function escapeHtml(text) {
@@ -760,8 +882,12 @@
         if (!res.ok) {
           throw new Error(data.error || "Chat failed");
         }
-
-        addChatMessage("assistant", data.reply || "No response.");
+        latestReplyText = data.reply || "No response.";
+        latestReplyAudioBase64 = data.audioBase64 || null;
+        readReplyBtn.disabled = !latestReplyAudioBase64;
+        stopReplyBtn.disabled = true;
+        
+        addChatMessage("assistant", latestreplytext);
         chatStatusEl.textContent = "";
 
         if (projectName) {
@@ -781,6 +907,21 @@
 
     sendChatBtn.addEventListener("click", sendChatMessage);
     downloadChatBtn.addEventListener("click", downloadChatTranscript);
+    voiceChatBtn.addEventListener("click", () => {
+  if (!recognition) {
+    initSpeechRecognition();
+  }
+  if (!recognition) return;
+
+  if (recognizing) {
+    recognition.stop();
+  } else {
+    recognition.start();
+  }
+});
+
+readReplyBtn.addEventListener("click", playLatestReplyAudio);
+stopReplyBtn.addEventListener("click", stopReplyAudio);
 
     chatInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
@@ -790,6 +931,9 @@
     });
 
     initializePage();
+    updateVoiceFeatureVisibility();
+readReplyBtn.disabled = true;
+stopReplyBtn.disabled = true;
   </script>
 </body>
 </html>
