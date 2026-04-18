@@ -82,12 +82,6 @@
       backdrop-filter: blur(4px);
     }
 
-    .audio-icon-btn.play,
-    .audio-icon-btn.pause,
-    .audio-icon-btn.stop {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
     .audio-icon-btn:hover {
       transform: translateY(-1px);
     }
@@ -164,12 +158,6 @@
     .upload-btn:disabled {
       opacity: 0.6;
       cursor: default;
-    }
-
-    .upload-btn.secondary {
-      background: #020617;
-      border: 1px solid #1f2937;
-      color: #e5e7eb;
     }
 
     .tiny-chat-btn {
@@ -264,9 +252,9 @@
       </div>
 
       <div id="ray-audio-controls" style="display:none;">
-        <button id="play-intro-btn" class="audio-icon-btn play" type="button" aria-label="Play">▶</button>
-        <button id="pause-intro-btn" class="audio-icon-btn pause" type="button" aria-label="Pause">⏸</button>
-        <button id="stop-intro-btn" class="audio-icon-btn stop" type="button" aria-label="Stop">⏹</button>
+        <button id="play-intro-btn" class="audio-icon-btn" type="button" aria-label="Play">▶</button>
+        <button id="pause-intro-btn" class="audio-icon-btn" type="button" aria-label="Pause">⏸</button>
+        <button id="stop-intro-btn" class="audio-icon-btn" type="button" aria-label="Stop">⏹</button>
       </div>
     </div>
 
@@ -314,9 +302,6 @@
             id="chat-input"
             placeholder="Ask Ray a question..."
           />
-          <button id="voice-chat-btn" class="upload-btn secondary" type="button" style="display:none;">Talk</button>
-          <button id="read-reply-btn" class="upload-btn secondary" type="button" style="display:none;" disabled>Read to me</button>
-          <button id="stop-reply-btn" class="upload-btn secondary" type="button" style="display:none;" disabled>Stop</button>
           <button id="send-chat-btn" class="upload-btn">Send</button>
         </div>
 
@@ -342,7 +327,7 @@
       <div id="upgrade-panel" class="upload-panel" style="display:none;">
         <h2>Want deeper project insight?</h2>
         <p>
-          Upgrade to <strong>Ray Pro Monthly</strong> to unlock file uploads, schedule analysis, voice input, read-aloud responses, and a more personalized coaching experience.
+          Upgrade to <strong>Ray Pro Monthly</strong> to unlock file uploads, schedule analysis, and a more personalized coaching experience.
           Use coupon code <strong>B2PUpgrade</strong> to get <strong>$17 off your first Ray Pro Monthly purchase</strong>.
           <a
             id="upgrade-link"
@@ -388,9 +373,6 @@
     const chatHistoryEl = document.getElementById("chat-history");
     const chatInput = document.getElementById("chat-input");
     const sendChatBtn = document.getElementById("send-chat-btn");
-    const voiceChatBtn = document.getElementById("voice-chat-btn");
-    const readReplyBtn = document.getElementById("read-reply-btn");
-    const stopReplyBtn = document.getElementById("stop-reply-btn");
     const downloadChatBtn = document.getElementById("download-chat-btn");
     const chatStatusEl = document.getElementById("chat-status");
 
@@ -405,12 +387,6 @@
     let wixPlanName = "";
     const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
     const PRO_PLAN_NAMES = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
-
-    let latestReplyAudioBase64 = null;
-    let latestReplyText = "";
-    let currentReplyAudio = null;
-    let recognition = null;
-    let recognizing = false;
 
     function getIntroStorageKey() {
       const currentUserId = localStorage.getItem("wixMemberId") || "anonymous";
@@ -439,154 +415,6 @@
       introAudio.pause();
       introAudio.currentTime = 0;
     }
-
-    function isProPlan(planName) {
-      return PRO_PLAN_NAMES.includes(planName);
-    }
-
-    function updateVoiceFeatureVisibility() {
-      const enabled = isProPlan(wixPlanName);
-
-      if (voiceChatBtn) voiceChatBtn.style.display = enabled ? "" : "none";
-      if (readReplyBtn) readReplyBtn.style.display = enabled ? "" : "none";
-      if (stopReplyBtn) stopReplyBtn.style.display = enabled ? "" : "none";
-
-      if (!enabled) {
-        voiceChatBtn.disabled = true;
-        readReplyBtn.disabled = true;
-        stopReplyBtn.disabled = true;
-      } else {
-        voiceChatBtn.disabled = false;
-      }
-    }
-
-    function base64ToAudioUrl(base64) {
-      const binary = atob(base64);
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-      }
-      const blob = new Blob([bytes], { type: "audio/mpeg" });
-      return URL.createObjectURL(blob);
-    }
-
-    function stopReplyAudio() {
-      if (currentReplyAudio) {
-        currentReplyAudio.pause();
-        currentReplyAudio.currentTime = 0;
-      }
-      stopReplyBtn.disabled = true;
-    }
-
-    function playLatestReplyAudio() {
-      if (!latestReplyAudioBase64) {
-        chatStatusEl.textContent = "No audio is available for the latest reply.";
-        return;
-      }
-
-      stopReplyAudio();
-
-      const audioUrl = base64ToAudioUrl(latestReplyAudioBase64);
-      currentReplyAudio = new Audio(audioUrl);
-
-      currentReplyAudio.onplay = () => {
-        chatStatusEl.textContent = "Ray is reading the latest reply...";
-        stopReplyBtn.disabled = false;
-      };
-
-      currentReplyAudio.onended = () => {
-        chatStatusEl.textContent = "";
-        stopReplyBtn.disabled = true;
-        URL.revokeObjectURL(audioUrl);
-      };
-
-      currentReplyAudio.onerror = () => {
-        chatStatusEl.textContent = "Could not play Ray's audio reply.";
-        stopReplyBtn.disabled = true;
-        URL.revokeObjectURL(audioUrl);
-      };
-
-      currentReplyAudio.play().catch((err) => {
-        console.error("Audio playback error:", err);
-        chatStatusEl.textContent = "Audio playback was blocked or failed.";
-        stopReplyBtn.disabled = true;
-        URL.revokeObjectURL(audioUrl);
-      });
-    }
-
-  function initSpeechRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SR) {
-    if (voiceChatBtn) {
-      voiceChatBtn.disabled = true;
-      voiceChatBtn.textContent = "Voice unsupported";
-    }
-    chatStatusEl.textContent = "Voice input is not supported in this browser.";
-    return;
-  }
-
-  recognition = new SR();
-  recognition.lang = "en-US";
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-  recognition.continuous = false;
-
-  recognition.onstart = function () {
-    recognizing = true;
-    if (voiceChatBtn) voiceChatBtn.textContent = "Listening...";
-    chatStatusEl.textContent = "Listening...";
-  };
-
-  recognition.onend = function () {
-    recognizing = false;
-    if (voiceChatBtn) voiceChatBtn.textContent = "Talk";
-    if (chatStatusEl.textContent === "Listening...") {
-      chatStatusEl.textContent = "";
-    }
-  };
-
-  recognition.onresult = function (event) {
-    const transcript = (event.results?.[0]?.[0]?.transcript || "").trim();
-    if (!transcript) return;
-    chatInput.value = transcript;
-    sendChatMessage();
-  };
-
-  recognition.onerror = function (event) {
-    console.error("Speech recognition error:", event.error);
-
-    if (voiceChatBtn) {
-      voiceChatBtn.textContent = "Talk";
-    }
-
-    recognizing = false;
-
-    switch (event.error) {
-      case "not-allowed":
-        chatStatusEl.textContent = "Microphone permission was blocked. Please allow microphone access in your browser.";
-        break;
-      case "service-not-allowed":
-        chatStatusEl.textContent = "Voice input is not allowed in this browser.";
-        break;
-      case "no-speech":
-        chatStatusEl.textContent = "I didn’t hear anything. Please try again.";
-        break;
-      case "audio-capture":
-        chatStatusEl.textContent = "No microphone was found or your microphone is unavailable.";
-        break;
-      case "network":
-        chatStatusEl.textContent = "Voice input hit a network error. Please try again.";
-        break;
-      case "aborted":
-        chatStatusEl.textContent = "Voice input was stopped.";
-        break;
-      default:
-        chatStatusEl.textContent = `Voice input failed: ${event.error}`;
-        break;
-    }
-  };
-}
 
     function maybePlayIntroOnce() {
       const introKey = getIntroStorageKey();
@@ -636,7 +464,6 @@
         upgradePanelEl.style.display = uploadHidden ? "" : "none";
       }
 
-      updateVoiceFeatureVisibility();
       maybePlayIntroOnce();
     });
 
@@ -882,7 +709,6 @@
       chatInput.value = "";
       chatStatusEl.textContent = "Ray is thinking...";
       sendChatBtn.disabled = true;
-      voiceChatBtn.disabled = true;
 
       try {
         const res = await fetch(CHAT_URL, {
@@ -903,12 +729,7 @@
           throw new Error(data.error || "Chat failed");
         }
 
-        latestReplyText = data.reply || "No response.";
-        latestReplyAudioBase64 = data.audioBase64 || null;
-        readReplyBtn.disabled = !latestReplyAudioBase64;
-        stopReplyBtn.disabled = true;
-
-        addChatMessage("assistant", latestReplyText);
+        addChatMessage("assistant", data.reply || "No response.");
         chatStatusEl.textContent = "";
 
         if (projectName) {
@@ -923,9 +744,6 @@
         chatStatusEl.textContent = "Chat failed. Please try again.";
       } finally {
         sendChatBtn.disabled = false;
-        if (isProPlan(wixPlanName)) {
-          voiceChatBtn.disabled = false;
-        }
       }
     }
 
@@ -946,22 +764,6 @@
     sendChatBtn.addEventListener("click", sendChatMessage);
     downloadChatBtn.addEventListener("click", downloadChatTranscript);
 
-    voiceChatBtn.addEventListener("click", () => {
-      if (!recognition) {
-        initSpeechRecognition();
-      }
-      if (!recognition) return;
-
-      if (recognizing) {
-        recognition.stop();
-      } else {
-        recognition.start();
-      }
-    });
-
-    readReplyBtn.addEventListener("click", playLatestReplyAudio);
-    stopReplyBtn.addEventListener("click", stopReplyAudio);
-
     chatInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -969,16 +771,13 @@
       }
     });
 
-    initializePage = function () {
+    function initializePage() {
       loadProjectsForUser().finally(() => {
         syncProjectInputMode();
       });
-    };
+    }
 
     initializePage();
-    updateVoiceFeatureVisibility();
-    readReplyBtn.disabled = true;
-    stopReplyBtn.disabled = true;
   </script>
 </body>
 </html>
