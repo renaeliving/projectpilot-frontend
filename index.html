@@ -150,18 +150,14 @@
     <section class="upload-panel">
       <h2>Project Context</h2>
       <p>
-        Enter or select a project name so Ray can organize schedules, risks, issues, and dates by project.
+        Select a project so Ray can organize schedules, risks, issues, and dates by project.
         Leave it blank in chat if you want general project management coaching.
       </p>
 
       <div class="upload-row">
-        <input
-          type="text"
-          id="project-name"
-          placeholder="Project name"
-          list="project-name-list"
-        />
-        <datalist id="project-name-list"></datalist>
+        <select id="project-name">
+          <option value="">Select a project</option>
+        </select>
       </div>
 
       <div id="project-context-status"></div>
@@ -237,7 +233,6 @@
     const LAST_PROJECT_KEY = "rayLastProjectName";
 
     const projectNameInput = document.getElementById("project-name");
-    const projectNameList = document.getElementById("project-name-list");
     const projectContextStatus = document.getElementById("project-context-status");
 
     const fileInput = document.getElementById("schedule-file");
@@ -302,13 +297,24 @@
     }
 
     function renderProjectNameOptions(names = getSavedProjectNames()) {
-      projectNameList.innerHTML = "";
+      projectNameInput.innerHTML = "";
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Select a project";
+      projectNameInput.appendChild(defaultOption);
 
       names.forEach((name) => {
         const option = document.createElement("option");
         option.value = name;
-        projectNameList.appendChild(option);
+        option.textContent = name;
+        projectNameInput.appendChild(option);
       });
+
+      const savedProject = localStorage.getItem(LAST_PROJECT_KEY) || "";
+      if (savedProject && names.includes(savedProject)) {
+        projectNameInput.value = savedProject;
+      }
     }
 
     function addProjectNameToSavedList(name) {
@@ -330,7 +336,10 @@
     }
 
     async function loadProjectsForUser() {
-      if (!userId) return;
+      if (!userId) {
+        renderProjectNameOptions();
+        return;
+      }
 
       try {
         const res = await fetch(`${PROJECTS_URL}?userId=${encodeURIComponent(userId)}`);
@@ -366,8 +375,6 @@
     }
 
     function initializePage() {
-      projectNameInput.value = localStorage.getItem(LAST_PROJECT_KEY) || "";
-
       loadProjectsForUser().finally(() => {
         updateProjectContextStatus();
 
@@ -377,11 +384,6 @@
         }
       });
     }
-
-    projectNameInput.addEventListener("input", () => {
-      localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
-      updateProjectContextStatus();
-    });
 
     projectNameInput.addEventListener("change", () => {
       localStorage.setItem(LAST_PROJECT_KEY, projectNameInput.value.trim());
@@ -393,7 +395,7 @@
       const projectName = projectNameInput.value.trim();
 
       if (!projectName) {
-        statusEl.textContent = "Please enter or select a project name before uploading a schedule.";
+        statusEl.textContent = "Please select a project before uploading a schedule.";
         return;
       }
 
