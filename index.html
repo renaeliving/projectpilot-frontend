@@ -42,7 +42,7 @@
     }
 
     #ray-image {
-      width: 350px;
+      width: 400px;
       max-width: 100%;
       height: auto;
       display: block;
@@ -222,10 +222,44 @@
 </div>
 
 <div id="ray-audio-controls" style="display:none;">
-  <button id="play-intro-btn" class="upload-btn secondary" type="button">Play</button>
-  <button id="pause-intro-btn" class="upload-btn secondary" type="button">Pause</button>
-  <button id="stop-intro-btn" class="upload-btn secondary" type="button">Stop</button>
+  <button id="play-intro-btn" class="audio-icon-btn play" type="button" aria-label="Play">▶</button>
+  <button id="pause-intro-btn" class="audio-icon-btn pause" type="button" aria-label="Pause">⏸</button>
+  <button id="stop-intro-btn" class="audio-icon-btn stop" type="button" aria-label="Stop">⏹</button>
 </div>
+.audio-icon-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+.audio-icon-btn.play {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.audio-icon-btn.pause {
+  background: linear-gradient(135deg, #64748b, #475569);
+}
+
+.audio-icon-btn.stop {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.audio-icon-btn:hover {
+  transform: translateY(-1px);
+}
+
+.audio-icon-btn:active {
+  transform: translateY(0);
+}
+      
     </div>
 
     <div id="ray-main">
