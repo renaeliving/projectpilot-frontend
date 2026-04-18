@@ -359,8 +359,9 @@
     const PRO_PLAN_NAMES = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
 
     function getIntroStorageKey() {
-      return `rayIntroPlayed_${userId || "anonymous"}`;
-    }
+  const currentUserId = localStorage.getItem("wixMemberId") || "anonymous";
+  return `rayIntroPlayed_${currentUserId}`;
+}
 
     function getIntroUrlForPlan(planName) {
       return PRO_PLAN_NAMES.includes(planName) ? PRO_INTRO_URL : BASIC_INTRO_URL;
