@@ -9,7 +9,6 @@
       --border-soft: #1f2937;
       --accent-strong: #38bdf8;
     }
-    
 
     body {
       margin: 0;
@@ -42,10 +41,21 @@
     }
 
     #ray-image {
-      width: 400px;
+      width: 350px;
       max-width: 100%;
       height: auto;
       display: block;
+    }
+
+    #ray-start-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    #start-intro-btn {
+      text-align: center;
+      padding: 10px 14px;
+      font-size: 0.82rem;
     }
 
     #ray-audio-controls {
@@ -54,49 +64,40 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+
     .audio-icon-btn {
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  cursor: pointer;
-  color: white;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
-}
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+    }
 
-.audio-icon-btn.play {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-}
+    .audio-icon-btn.play {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+    }
 
-.audio-icon-btn.pause {
-  background: linear-gradient(135deg, #64748b, #475569);
-}
+    .audio-icon-btn.pause {
+      background: linear-gradient(135deg, #64748b, #475569);
+    }
 
-.audio-icon-btn.stop {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-}
+    .audio-icon-btn.stop {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
 
-.audio-icon-btn:hover {
-  transform: translateY(-1px);
-}
+    .audio-icon-btn:hover {
+      transform: translateY(-1px);
+    }
 
-.audio-icon-btn:active {
-  transform: translateY(0);
-}
-    #ray-start-wrap {
-  display: flex;
-  justify-content: center;
-}
-
-#start-intro-btn {
-  text-align: center;
-  padding: 10px 14px;
-  font-size: 0.82rem;
-}
+    .audio-icon-btn:active {
+      transform: translateY(0);
+    }
 
     #ray-main {
       display: flex;
@@ -236,7 +237,7 @@
       }
 
       #ray-image {
-        width: 180px;
+        width: 220px;
       }
     }
   </style>
@@ -250,56 +251,15 @@
         alt="Ray"
       />
 
-    <div id="ray-start-wrap">
-  <button id="start-intro-btn" class="upload-btn" type="button">New here? Click to meet Ray</button>
-</div>
+      <div id="ray-start-wrap">
+        <button id="start-intro-btn" class="upload-btn" type="button">New here? Click to meet Ray</button>
+      </div>
 
-<div class="upload-row">
-  <input
-    type="text"
-    id="chat-input"
-    placeholder="Ask Ray a question..."
-  />
-  <button id="send-chat-btn" class="upload-btn">Send</button>
-  <button id="download-chat-btn" class="upload-btn secondary" type="button">Download chat</button>
-</div>
-
-  .audio-icon-btn {
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  cursor: pointer;
-  color: white;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
-}
-</div>
-
-
-.audio-icon-btn.play {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-}
-
-.audio-icon-btn.pause {
-  background: linear-gradient(135deg, #64748b, #475569);
-}
-
-.audio-icon-btn.stop {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-}
-
-.audio-icon-btn:hover {
-  transform: translateY(-1px);
-}
-
-.audio-icon-btn:active {
-  transform: translateY(0);
-}
-      
+      <div id="ray-audio-controls" style="display:none;">
+        <button id="play-intro-btn" class="audio-icon-btn play" type="button" aria-label="Play">▶</button>
+        <button id="pause-intro-btn" class="audio-icon-btn pause" type="button" aria-label="Pause">⏸</button>
+        <button id="stop-intro-btn" class="audio-icon-btn stop" type="button" aria-label="Stop">⏹</button>
+      </div>
     </div>
 
     <div id="ray-main">
@@ -310,15 +270,12 @@
           Leave it blank if you want general project management coaching.
         </p>
 
-     <div class="upload-row">
-  <input
-    type="text"
-    id="chat-input"
-    placeholder="Ask Ray a question..."
-  />
-  <button id="send-chat-btn" class="upload-btn">Send</button>
-  <button id="download-chat-btn" class="upload-btn secondary" type="button">Download chat</button>
-</div>
+        <div class="upload-row">
+          <select id="project-name">
+            <option value="">Select a project</option>
+            <option value="__new__">Add new project...</option>
+          </select>
+        </div>
 
         <div class="upload-row" id="new-project-row" style="display:none;">
           <input
@@ -344,6 +301,7 @@
             placeholder="Ask Ray a question..."
           />
           <button id="send-chat-btn" class="upload-btn">Send</button>
+          <button id="download-chat-btn" class="upload-btn secondary" type="button">Download chat</button>
         </div>
 
         <div id="chat-status"></div>
@@ -418,6 +376,7 @@
     const chatHistoryEl = document.getElementById("chat-history");
     const chatInput = document.getElementById("chat-input");
     const sendChatBtn = document.getElementById("send-chat-btn");
+    const downloadChatBtn = document.getElementById("download-chat-btn");
     const chatStatusEl = document.getElementById("chat-status");
 
     const playIntroBtn = document.getElementById("play-intro-btn");
@@ -432,13 +391,12 @@
     const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
     let uploadHidden = true;
 
-    const BASIC_PLAN_NAMES = ["Ray Coach", "Temp Ray Access - Basic"];
     const PRO_PLAN_NAMES = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
 
     function getIntroStorageKey() {
-  const currentUserId = localStorage.getItem("wixMemberId") || "anonymous";
-  return `rayIntroPlayed_${currentUserId}`;
-}
+      const currentUserId = localStorage.getItem("wixMemberId") || "anonymous";
+      return `rayIntroPlayed_${currentUserId}`;
+    }
 
     function getIntroUrlForPlan(planName) {
       return PRO_PLAN_NAMES.includes(planName) ? PRO_INTRO_URL : BASIC_INTRO_URL;
@@ -463,38 +421,38 @@
       introAudio.currentTime = 0;
     }
 
-  function maybePlayIntroOnce() {
-  const introKey = getIntroStorageKey();
-  const alreadyPlayed = localStorage.getItem(introKey) === "true";
+    function maybePlayIntroOnce() {
+      const introKey = getIntroStorageKey();
+      const alreadyPlayed = localStorage.getItem(introKey) === "true";
 
-  if (alreadyPlayed) {
-    if (rayStartWrap) rayStartWrap.style.display = "none";
-    if (rayAudioControls) rayAudioControls.style.display = "flex";
-    return;
-  }
+      if (alreadyPlayed) {
+        if (rayStartWrap) rayStartWrap.style.display = "none";
+        if (rayAudioControls) rayAudioControls.style.display = "flex";
+        return;
+      }
 
-  if (rayStartWrap) rayStartWrap.style.display = "flex";
-  if (rayAudioControls) rayAudioControls.style.display = "none";
-  chatStatusEl.textContent = "New here? Click the button next to Ray to hear a quick welcome message.";
-}
+      if (rayStartWrap) rayStartWrap.style.display = "flex";
+      if (rayAudioControls) rayAudioControls.style.display = "none";
+      chatStatusEl.textContent = "New here? Click the button next to Ray to hear a quick welcome message.";
+    }
 
-   function showAudioControls() {
-  if (rayStartWrap) rayStartWrap.style.display = "none";
-  if (rayAudioControls) rayAudioControls.style.display = "flex";
-}
+    function showAudioControls() {
+      if (rayStartWrap) rayStartWrap.style.display = "none";
+      if (rayAudioControls) rayAudioControls.style.display = "flex";
+    }
 
-startIntroBtn.addEventListener("click", () => {
-  showAudioControls();
-  playWelcomeIntro();
-  localStorage.setItem(getIntroStorageKey(), "true");
-  if (chatStatusEl.textContent.startsWith("Welcome!")) {
-    chatStatusEl.textContent = "";
-  }
-});
+    startIntroBtn.addEventListener("click", () => {
+      showAudioControls();
+      playWelcomeIntro();
+      localStorage.setItem(getIntroStorageKey(), "true");
+      if (chatStatusEl.textContent.startsWith("New here?")) {
+        chatStatusEl.textContent = "";
+      }
+    });
 
-playIntroBtn.addEventListener("click", () => {
-  playWelcomeIntro();
-});
+    playIntroBtn.addEventListener("click", () => {
+      playWelcomeIntro();
+    });
 
     pauseIntroBtn.addEventListener("click", () => {
       pauseWelcomeIntro();
@@ -596,13 +554,15 @@ playIntroBtn.addEventListener("click", () => {
     }
 
     async function loadProjectsForUser() {
-      if (!userId) {
+      const currentUserId = localStorage.getItem("wixMemberId") || "";
+
+      if (!currentUserId) {
         renderProjectNameOptions();
         return;
       }
 
       try {
-        const res = await fetch(`${PROJECTS_URL}?userId=${encodeURIComponent(userId)}`);
+        const res = await fetch(`${PROJECTS_URL}?userId=${encodeURIComponent(currentUserId)}`);
         if (!res.ok) {
           throw new Error(`Project load failed: ${res.status}`);
         }
@@ -668,6 +628,46 @@ playIntroBtn.addEventListener("click", () => {
       });
     }
 
+    function downloadChatTranscript() {
+      const projectName = getSelectedProjectName() || "general";
+      const safeProjectName = projectName.replace(/[^a-z0-9-_]+/gi, "_");
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+
+      const lines = [];
+      const messages = chatHistoryEl.querySelectorAll(".chat-message");
+
+      messages.forEach((msg) => {
+        const fullText = msg.innerText.trim();
+        if (fullText) lines.push(fullText);
+      });
+
+      if (!lines.length) {
+        chatStatusEl.textContent = "There is no chat to download yet.";
+        return;
+      }
+
+      const transcript = [
+        "Ray Chat Export",
+        `Project: ${projectName}`,
+        `Exported: ${new Date().toLocaleString()}`,
+        "",
+        ...lines
+      ].join("\n");
+
+      const blob = new Blob([transcript], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ray-chat-${safeProjectName}-${timestamp}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      URL.revokeObjectURL(url);
+      chatStatusEl.textContent = "Chat downloaded.";
+    }
+
     projectNameInput.addEventListener("change", () => {
       const selected = projectNameInput.value.trim();
 
@@ -700,7 +700,7 @@ playIntroBtn.addEventListener("click", () => {
 
       const formData = new FormData();
       formData.append("schedule", file);
-      formData.append("userId", userId);
+      formData.append("userId", localStorage.getItem("wixMemberId") || "anonymous");
       formData.append("projectName", projectName);
 
       analyzeBtn.disabled = true;
@@ -762,7 +762,7 @@ playIntroBtn.addEventListener("click", () => {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userId,
+            userId: localStorage.getItem("wixMemberId") || "anonymous",
             projectName,
             message
           })
@@ -793,6 +793,7 @@ playIntroBtn.addEventListener("click", () => {
     }
 
     sendChatBtn.addEventListener("click", sendChatMessage);
+    downloadChatBtn.addEventListener("click", downloadChatTranscript);
 
     chatInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
