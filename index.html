@@ -54,6 +54,39 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+    .audio-icon-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+.audio-icon-btn.play {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.audio-icon-btn.pause {
+  background: linear-gradient(135deg, #64748b, #475569);
+}
+
+.audio-icon-btn.stop {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.audio-icon-btn:hover {
+  transform: translateY(-1px);
+}
+
+.audio-icon-btn:active {
+  transform: translateY(0);
+}
     #ray-start-wrap {
   display: flex;
   justify-content: center;
@@ -221,10 +254,15 @@
   <button id="start-intro-btn" class="upload-btn" type="button">New here? Click to meet Ray</button>
 </div>
 
-<div id="ray-audio-controls" style="display:none;">
-  <button id="play-intro-btn" class="audio-icon-btn play" type="button" aria-label="Play">▶</button>
-  <button id="pause-intro-btn" class="audio-icon-btn pause" type="button" aria-label="Pause">⏸</button>
-  <button id="stop-intro-btn" class="audio-icon-btn stop" type="button" aria-label="Stop">⏹</button>
+<div class="upload-row">
+  <input
+    type="text"
+    id="chat-input"
+    placeholder="Ask Ray a question..."
+  />
+  <button id="send-chat-btn" class="upload-btn">Send</button>
+  <button id="download-chat-btn" class="upload-btn secondary" type="button">Download chat</button>
+</div>
 
   .audio-icon-btn {
   width: 44px;
@@ -272,12 +310,15 @@
           Leave it blank if you want general project management coaching.
         </p>
 
-        <div class="upload-row">
-          <select id="project-name">
-            <option value="">Select a project</option>
-            <option value="__new__">Add new project...</option>
-          </select>
-        </div>
+     <div class="upload-row">
+  <input
+    type="text"
+    id="chat-input"
+    placeholder="Ask Ray a question..."
+  />
+  <button id="send-chat-btn" class="upload-btn">Send</button>
+  <button id="download-chat-btn" class="upload-btn secondary" type="button">Download chat</button>
+</div>
 
         <div class="upload-row" id="new-project-row" style="display:none;">
           <input
