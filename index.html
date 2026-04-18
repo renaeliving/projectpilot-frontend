@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Aero – Your AI Project Coach</title>
+  <title>Ray – Your AI Project Coach</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
@@ -260,18 +260,6 @@
       cursor: default;
     }
 
-    .kai-mic-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: #4b5563;
-    }
-
-    .kai-mic-dot.active {
-      background: #ef4444;
-      box-shadow: 0 0 8px rgba(239, 68, 68, 0.9);
-    }
-
     .kai-tools {
       background: #020617;
       border-radius: 12px;
@@ -319,8 +307,8 @@
 
   <script>
     (function () {
-      // TODO: confirm this matches your backend URL
-      const BACKEND_URL = "https://projectpilot-backend-zkad.onrender.com";
+      const BACKEND_BASE = "https://projectpilot-backend-zkad.onrender.com";
+      const CHAT_URL = `${BACKEND_BASE}/api/chat`;
 
       const root = document.getElementById("kai-root");
 
@@ -335,8 +323,8 @@
               </div>
             </div>
             <div>
-              <h2 class="kai-title">Aero – Your AI Project Coach</h2>
-              <p class="kai-subtitle">Ask anything about your project – timelines, risks, stakeholders, schedules, and “what do I do next?”.</p>
+              <h2 class="kai-title">Ray – Your AI Project Coach</h2>
+              <p class="kai-subtitle">Ask anything about your project – timelines, risks, stakeholders, schedules, and what to do next.</p>
             </div>
           </div>
 
@@ -351,10 +339,6 @@
                     <span id="kai-status-text">Ready</span>
                   </div>
                   <div style="display:flex; gap:6px; align-items:center;">
-                    <button type="button" class="kai-btn secondary" id="kai-mic-btn">
-                      <span class="kai-mic-dot" id="kai-mic-dot"></span>
-                      <span id="kai-mic-label">Talk</span>
-                    </button>
                     <button type="submit" class="kai-btn" id="kai-send-btn">Send</button>
                   </div>
                 </div>
@@ -387,13 +371,13 @@
                 <input id="kai-team" placeholder="IT, Facilities, vendor, local sites..." />
               </div>
               <button type="button" class="kai-btn secondary" id="kai-schedule-btn" style="margin-bottom:4px;">
-                🗓️ Generate starter schedule
+                Generate starter schedule
               </button>
               <button type="button" class="kai-btn secondary" id="kai-risks-btn">
-                ⚠️ Help me identify risks
+                Help me identify risks
               </button>
               <p class="kai-note">
-                Aero is for guidance only and doesn’t replace your organization’s PM standards or approvals.
+                Ray is for guidance only and doesn’t replace your organization’s PM standards or approvals.
               </p>
             </aside>
           </div>
@@ -406,11 +390,6 @@
       const inputEl = document.getElementById("kai-input");
       const statusText = document.getElementById("kai-status-text");
       const sendBtn = document.getElementById("kai-send-btn");
-
-      const micBtn = document.getElementById("kai-mic-btn");
-      const micDot = document.getElementById("kai-mic-dot");
-      const micLabel = document.getElementById("kai-mic-label");
-
       const scheduleBtn = document.getElementById("kai-schedule-btn");
       const risksBtn = document.getElementById("kai-risks-btn");
 
@@ -422,17 +401,12 @@
         wrapper.style.flexDirection = "column";
 
         who.className = "kai-speaker";
-        who.textContent = role === "user" ? "You" : "Aero";
+        who.textContent = role === "user" ? "You" : "Ray";
 
         bubble.className = "kai-bubble " + (role === "user" ? "user" : "assistant");
         bubble.textContent = text;
 
-        if (role === "user") {
-          wrapper.style.alignItems = "flex-end";
-        } else {
-          wrapper.style.alignItems = "flex-start";
-        }
-
+        wrapper.style.alignItems = role === "user" ? "flex-end" : "flex-start";
         wrapper.appendChild(who);
         wrapper.appendChild(bubble);
         messagesEl.appendChild(wrapper);
@@ -441,29 +415,42 @@
 
       function setLoading(isLoading) {
         sendBtn.disabled = isLoading;
-        statusText.textContent = isLoading ? "Thinking…" : "Ready";
+        statusText.textContent = isLoading ? "Thinking..." : "Ready";
+      }
+
+      function startTalking() {
+        if (avatarEl) avatarEl.classList.add("talking");
+      }
+
+      function stopTalking() {
+        if (avatarEl) avatarEl.classList.remove("talking");
       }
 
       async function callBackend(userMessage) {
-        if (!BACKEND_URL.includes("http")) {
-          appendBubble("Backend URL is not configured yet. Ask your admin to update BACKEND_URL.", "assistant");
-          return;
-        }
         setLoading(true);
         try {
-          const res = await fetch(BACKEND_URL, {
+          const res = await fetch(CHAT_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: userMessage }),
           });
+
           if (!res.ok) {
             const text = await res.text();
             throw new Error(text || res.statusText);
           }
+
           const data = await res.json();
           const reply = (data.reply || "").trim() || "I’m not sure how to respond to that.";
           appendBubble(reply, "assistant");
-          speakText(reply);
+
+          if (data.audioBase64) {
+            const audio = new Audio(`data:audio/mpeg;base64,${data.audioBase64}`);
+            audio.onplay = startTalking;
+            audio.onended = stopTalking;
+            audio.onerror = stopTalking;
+            audio.play().catch(() => {});
+          }
         } catch (err) {
           appendBubble("There was an error contacting the ProjectPilot server. Please try again in a moment.", "assistant");
           console.error(err);
@@ -519,78 +506,8 @@ Help me identify project risks for a ${type} project.
         callBackend(prompt);
       });
 
-      // ---- SPEECH: OUTPUT (ElevenLabs audio is generated server-side) ----
-      function speakText(text) {
-        // In the current setup audio is handled by ElevenLabs on the server,
-        // so we don't need browser TTS here. This is left as a fallback:
-        if (!("speechSynthesis" in window)) return;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-
-        utterance.onstart = function () {
-          if (avatarEl) avatarEl.classList.add("talking");
-        };
-        utterance.onend = function () {
-          if (avatarEl) avatarEl.classList.remove("talking");
-        };
-        utterance.onerror = function () {
-          if (avatarEl) avatarEl.classList.remove("talking");
-        };
-
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
-      }
-
-      // ---- SPEECH: INPUT (browser SpeechRecognition) ----
-      let recognition = null;
-      let recognizing = false;
-
-      function initSpeechRecognition() {
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SR) {
-          micLabel.textContent = "Voice input not supported in this browser";
-          micBtn.disabled = true;
-          return;
-        }
-        recognition = new SR();
-        recognition.lang = "en-US";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        recognition.onstart = function () {
-          recognizing = true;
-          micDot.classList.add("active");
-          micLabel.textContent = "Listening…";
-        };
-        recognition.onend = function () {
-          recognizing = false;
-          micDot.classList.remove("active");
-          micLabel.textContent = "Talk";
-        };
-        recognition.onresult = function (event) {
-          const transcript = (event.results[0][0].transcript || "").trim();
-          if (!transcript) return;
-          appendBubble(transcript, "user");
-          callBackend(transcript);
-        };
-        recognition.onerror = function (event) {
-          console.error("Speech recognition error:", event.error);
-        };
-      }
-
-      micBtn.addEventListener("click", function () {
-        if (!recognition) {
-          initSpeechRecognition();
-        }
-        if (!recognition) return;
-        if (recognizing) recognition.stop();
-        else recognition.start();
-      });
-
-      // Initial welcome
       appendBubble(
-        "Hi, I’m Aero, your AI project coach. Tell me about your project and I’ll help you build a schedule, identify risks, or figure out what to do next.",
+        "Hi, I’m Ray, your AI project coach. Tell me about your project and I’ll help you build a schedule, identify risks, or figure out what to do next.",
         "assistant"
       );
     })();
