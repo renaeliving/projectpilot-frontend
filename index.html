@@ -321,31 +321,31 @@
           Ray can analyze your schedule in detail and highlight risks, identify issues, and recommend specific actions to keep your project on track.
         </p>
 
-       <div class="upload-row">
-  <input type="file" id="schedule-file" accept=".csv" />
-  <button id="analyze-btn" class="upload-btn">Analyze schedule</button>
-</div>
+        <div class="upload-row">
+          <input type="file" id="schedule-file" accept=".csv" />
+          <button id="analyze-btn" class="upload-btn">Analyze schedule</button>
+        </div>
 
-<div style="margin-top:-2px; margin-bottom:10px;">
-  <button
-    id="csv-format-help-btn"
-    type="button"
-    style="
-      background:none;
-      border:none;
-      padding:0;
-      color:#38bdf8;
-      font-size:0.82rem;
-      cursor:pointer;
-      text-decoration:underline;
-    "
-  >
-    What should my CSV include?
-  </button>
-</div>
+        <div style="margin-top:-2px; margin-bottom:10px;">
+          <button
+            id="csv-format-help-btn"
+            type="button"
+            style="
+              background:none;
+              border:none;
+              padding:0;
+              color:#38bdf8;
+              font-size:0.82rem;
+              cursor:pointer;
+              text-decoration:underline;
+            "
+          >
+            What should my CSV include?
+          </button>
+        </div>
 
-<div id="upload-status"></div>
-<div id="analysis-result"></div>
+        <div id="upload-status"></div>
+        <div id="analysis-result"></div>
       </section>
 
       <div id="upgrade-panel" class="upload-panel" style="display:none;">
@@ -362,6 +362,110 @@
           >Explore plans and upgrade</a>
         </p>
       </div>
+    </div>
+  </div>
+
+  <div
+    id="csv-format-modal"
+    style="
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.65);
+      z-index:9999;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      box-sizing:border-box;
+    "
+  >
+    <div
+      style="
+        width:100%;
+        max-width:650px;
+        background:#020617;
+        color:#e5e7eb;
+        border:1px solid #1f2937;
+        border-radius:16px;
+        box-shadow:0 18px 40px rgba(0,0,0,0.6);
+        padding:20px;
+        position:relative;
+      "
+    >
+      <button
+        id="close-csv-format-modal"
+        type="button"
+        style="
+          position:absolute;
+          top:12px;
+          right:12px;
+          width:32px;
+          height:32px;
+          border-radius:999px;
+          border:1px solid rgba(255,255,255,0.18);
+          background:rgba(255,255,255,0.08);
+          color:white;
+          cursor:pointer;
+          font-size:0.95rem;
+        "
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+      <h2 style="margin:0 0 10px; font-size:1.15rem;">Recommended CSV Format</h2>
+
+      <p style="margin:0 0 12px; color:#9ca3af; font-size:0.9rem;">
+        For best results, your schedule upload should include these fields.
+      </p>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:600; margin-bottom:6px;">Minimum recommended columns</div>
+        <ul style="margin:0; padding-left:18px; line-height:1.6;">
+          <li>Task Name</li>
+          <li>Start Date</li>
+          <li>Finish Date</li>
+          <li>Dependencies or Predecessors</li>
+          <li>Resources</li>
+        </ul>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:600; margin-bottom:6px;">Helpful additional columns</div>
+        <ul style="margin:0; padding-left:18px; line-height:1.6;">
+          <li>Duration</li>
+          <li>Task ID</li>
+          <li>Successors</li>
+          <li>Milestones</li>
+          <li>Baseline Dates</li>
+          <li>Percent Complete</li>
+          <li>Constraints</li>
+          <li>Critical Path Indicators</li>
+          <li>Owner or Team</li>
+        </ul>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div style="font-weight:600; margin-bottom:6px;">Example header row</div>
+        <div
+          style="
+            background:#0f172a;
+            border:1px solid #1f2937;
+            border-radius:10px;
+            padding:10px;
+            font-size:0.82rem;
+            overflow-x:auto;
+            white-space:nowrap;
+            color:#cbd5e1;
+          "
+        >
+          Task ID, Task Name, Start Date, Finish Date, Duration, Predecessors, Resources, Owner, Milestone, Notes
+        </div>
+      </div>
+
+      <p style="margin:0; color:#9ca3af; font-size:0.85rem;">
+        The more complete your schedule export is, the more specific and useful Ray’s feedback will be.
+      </p>
     </div>
   </div>
 
@@ -394,28 +498,14 @@
     const uploadPanelEl = document.getElementById("upload-panel");
     const upgradePanelEl = document.getElementById("upgrade-panel");
     const csvFormatHelpBtn = document.getElementById("csv-format-help-btn");
-const csvFormatModal = document.getElementById("csv-format-modal");
-const closeCsvFormatModalBtn = document.getElementById("close-csv-format-modal");
+    const csvFormatModal = document.getElementById("csv-format-modal");
+    const closeCsvFormatModalBtn = document.getElementById("close-csv-format-modal");
 
     const chatHistoryEl = document.getElementById("chat-history");
     const chatInput = document.getElementById("chat-input");
     const sendChatBtn = document.getElementById("send-chat-btn");
     const downloadChatBtn = document.getElementById("download-chat-btn");
     const chatStatusEl = document.getElementById("chat-status");
-
-    csvFormatHelpBtn.addEventListener("click", () => {
-  csvFormatModal.style.display = "flex";
-});
-
-closeCsvFormatModalBtn.addEventListener("click", () => {
-  csvFormatModal.style.display = "none";
-});
-
-csvFormatModal.addEventListener("click", (e) => {
-  if (e.target === csvFormatModal) {
-    csvFormatModal.style.display = "none";
-  }
-});
 
     const playIntroBtn = document.getElementById("play-intro-btn");
     const pauseIntroBtn = document.getElementById("pause-intro-btn");
@@ -428,6 +518,20 @@ csvFormatModal.addEventListener("click", (e) => {
     let wixPlanName = "";
     const uploadAllowedPlans = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
     const PRO_PLAN_NAMES = ["Ray Pro", "Ray Pro Annual", "Temp Ray Access - Pro"];
+
+    csvFormatHelpBtn.addEventListener("click", () => {
+      csvFormatModal.style.display = "flex";
+    });
+
+    closeCsvFormatModalBtn.addEventListener("click", () => {
+      csvFormatModal.style.display = "none";
+    });
+
+    csvFormatModal.addEventListener("click", (e) => {
+      if (e.target === csvFormatModal) {
+        csvFormatModal.style.display = "none";
+      }
+    });
 
     function getIntroStorageKey() {
       const currentUserId = localStorage.getItem("wixMemberId") || "anonymous";
@@ -817,110 +921,6 @@ csvFormatModal.addEventListener("click", (e) => {
         sendChatMessage();
       }
     });
-
-    <div
-  id="csv-format-modal"
-  style="
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.65);
-    z-index:9999;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    box-sizing:border-box;
-  "
->
-  <div
-    style="
-      width:100%;
-      max-width:650px;
-      background:#020617;
-      color:#e5e7eb;
-      border:1px solid #1f2937;
-      border-radius:16px;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
-      padding:20px;
-      position:relative;
-    "
-  >
-    <button
-      id="close-csv-format-modal"
-      type="button"
-      style="
-        position:absolute;
-        top:12px;
-        right:12px;
-        width:32px;
-        height:32px;
-        border-radius:999px;
-        border:1px solid rgba(255,255,255,0.18);
-        background:rgba(255,255,255,0.08);
-        color:white;
-        cursor:pointer;
-        font-size:0.95rem;
-      "
-      aria-label="Close"
-    >
-      ×
-    </button>
-
-    <h2 style="margin:0 0 10px; font-size:1.15rem;">Recommended CSV Format</h2>
-
-    <p style="margin:0 0 12px; color:#9ca3af; font-size:0.9rem;">
-      For best results, your schedule upload should include these fields.
-    </p>
-
-    <div style="margin-bottom:14px;">
-      <div style="font-weight:600; margin-bottom:6px;">Minimum recommended columns</div>
-      <ul style="margin:0; padding-left:18px; line-height:1.6;">
-        <li>Task Name</li>
-        <li>Start Date</li>
-        <li>Finish Date</li>
-        <li>Dependencies or Predecessors</li>
-        <li>Resources</li>
-      </ul>
-    </div>
-
-    <div style="margin-bottom:14px;">
-      <div style="font-weight:600; margin-bottom:6px;">Helpful additional columns</div>
-      <ul style="margin:0; padding-left:18px; line-height:1.6;">
-        <li>Duration</li>
-        <li>Task ID</li>
-        <li>Successors</li>
-        <li>Milestones</li>
-        <li>Baseline Dates</li>
-        <li>Percent Complete</li>
-        <li>Constraints</li>
-        <li>Critical Path Indicators</li>
-        <li>Owner or Team</li>
-      </ul>
-    </div>
-
-    <div style="margin-bottom:10px;">
-      <div style="font-weight:600; margin-bottom:6px;">Example header row</div>
-      <div
-        style="
-          background:#0f172a;
-          border:1px solid #1f2937;
-          border-radius:10px;
-          padding:10px;
-          font-size:0.82rem;
-          overflow-x:auto;
-          white-space:nowrap;
-          color:#cbd5e1;
-        "
-      >
-        Task ID, Task Name, Start Date, Finish Date, Duration, Predecessors, Resources, Owner, Milestone, Notes
-      </div>
-    </div>
-
-    <p style="margin:0; color:#9ca3af; font-size:0.85rem;">
-      The more complete your schedule export is, the more specific and useful Ray’s feedback will be.
-    </p>
-  </div>
-</div>
 
     initializePage();
   </script>
