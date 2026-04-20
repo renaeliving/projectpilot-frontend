@@ -74,47 +74,28 @@
       text-align: center;
     }
 
-    #ray-start-wrap {
-      display: flex;
-      justify-content: center;
-    }
-
-    #start-intro-btn {
-      text-align: center;
-      padding: 10px 14px;
-      font-size: 0.82rem;
-    }
-
-    #ray-audio-controls {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .audio-icon-btn {
-      width: 28px;
-      height: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 999px;
+    .mic-indicator {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      font-size: 0.72rem;
-      cursor: pointer;
-      color: white;
-      background: rgba(255, 255, 255, 0.08);
-      box-shadow: none;
-      padding: 0;
-      backdrop-filter: blur(4px);
+      gap: 8px;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    .audio-icon-btn:hover {
-      transform: translateY(-1px);
+    .mic-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #4b5563;
     }
 
-    .audio-icon-btn:active {
-      transform: translateY(0);
+    .mic-indicator.on .mic-dot {
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
     }
 
     #ray-main {
@@ -177,15 +158,16 @@
     .voice-btn {
       border: none;
       border-radius: 999px;
-      padding: 8px 16px;
-      font-size: 0.85rem;
+      padding: 8px 12px;
+      font-size: 0.78rem;
       cursor: pointer;
       background: linear-gradient(135deg, #0ea5e9, #2563eb);
       color: #f9fafb;
       white-space: nowrap;
     }
 
-    .voice-btn.secondary {
+    .voice-btn.secondary,
+    .btn.secondary {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.16);
     }
@@ -249,63 +231,16 @@
       margin-bottom: 6px;
     }
 
-    .markdown-content p {
-      margin: 0 0 10px;
-    }
-
-    .markdown-content p:last-child {
-      margin-bottom: 0;
-    }
-
-    .markdown-content ul,
-    .markdown-content ol {
-      margin: 8px 0 10px 20px;
-      padding: 0;
-    }
-
-    .markdown-content li {
-      margin: 4px 0;
-    }
-
-    .markdown-content h1,
-    .markdown-content h2,
-    .markdown-content h3 {
-      margin: 10px 0 8px;
-      line-height: 1.3;
-    }
-
-    .markdown-content table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 10px 0;
-    }
-
-    .markdown-content th,
-    .markdown-content td {
-      border: 1px solid #334155;
-      padding: 8px;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    .markdown-content code {
-      background: rgba(255,255,255,0.08);
-      padding: 2px 5px;
-      border-radius: 6px;
-    }
-
-    .markdown-content pre {
-      background: #020617;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 10px;
-      overflow-x: auto;
-    }
-
-    .markdown-content a {
-      color: #38bdf8;
-      text-decoration: underline;
-    }
+    .markdown-content p { margin: 0 0 10px; }
+    .markdown-content p:last-child { margin-bottom: 0; }
+    .markdown-content ul, .markdown-content ol { margin: 8px 0 10px 20px; padding: 0; }
+    .markdown-content li { margin: 4px 0; }
+    .markdown-content h1, .markdown-content h2, .markdown-content h3 { margin: 10px 0 8px; line-height: 1.3; }
+    .markdown-content table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    .markdown-content th, .markdown-content td { border: 1px solid #334155; padding: 8px; text-align: left; vertical-align: top; }
+    .markdown-content code { background: rgba(255,255,255,0.08); padding: 2px 5px; border-radius: 6px; }
+    .markdown-content pre { background: #020617; border: 1px solid #334155; border-radius: 10px; padding: 10px; overflow-x: auto; }
+    .markdown-content a { color: #38bdf8; text-decoration: underline; }
 
     .feature-disabled {
       border: 1px dashed rgba(148, 163, 184, 0.35);
@@ -354,14 +289,11 @@
 
       <div id="voice-state"></div>
 
-      <div id="ray-start-wrap">
-        <button id="start-intro-btn" class="btn" type="button">New here? Click to meet Ray</button>
-      </div>
+      <button id="replay-welcome-btn" class="btn secondary" type="button">Replay Welcome</button>
 
-      <div id="ray-audio-controls" style="display:none;">
-        <button id="play-intro-btn" class="audio-icon-btn" type="button" aria-label="Play">▶</button>
-        <button id="pause-intro-btn" class="audio-icon-btn" type="button" aria-label="Pause">⏸</button>
-        <button id="stop-intro-btn" class="audio-icon-btn" type="button" aria-label="Stop">⏹</button>
+      <div id="open-mic-indicator" class="mic-indicator">
+        <span class="mic-dot"></span>
+        <span id="open-mic-text">Open Mic Off</span>
       </div>
     </div>
 
@@ -402,9 +334,9 @@
             id="chat-input"
             placeholder="Ask Ray a question..."
           />
-          <button id="send-chat-btn" class="btn" type="button">Send</button>
-          <button id="talk-btn" class="voice-btn" type="button">Talk</button>
-          <button id="stop-voice-btn" class="voice-btn secondary" type="button">Stop</button>
+          <button id="send-chat-btn" class="btn" type="button">Send Text</button>
+          <button id="begin-btn" class="voice-btn" type="button">Begin Conversation</button>
+          <button id="stop-conversation-btn" class="voice-btn secondary" type="button">Stop Conversation</button>
         </div>
 
         <div id="chat-status"></div>
@@ -446,6 +378,8 @@
   <script>
     const BACKEND_BASE = "https://projectpilot-backend-zkad.onrender.com";
     const TRY_CHAT_URL = `${BACKEND_BASE}/api/try-ray`;
+    const TRY_VOICE_CHAT_URL = `${BACKEND_BASE}/api/try-ray-voice`;
+    const SPEAK_URL = `${BACKEND_BASE}/api/speak`;
     const PROJECTS_URL = `${BACKEND_BASE}/api/projects`;
     const BASIC_INTRO_URL = "https://static.wixstatic.com/mp3/3cf059_d41ee85c8a494b55a15de71fa54fbb88.mp3";
 
@@ -476,23 +410,37 @@
     const newProjectNameInput = document.getElementById("new-project-name");
     const projectContextStatus = document.getElementById("project-context-status");
 
-    const playIntroBtn = document.getElementById("play-intro-btn");
-    const pauseIntroBtn = document.getElementById("pause-intro-btn");
-    const startIntroBtn = document.getElementById("start-intro-btn");
-    const stopIntroBtn = document.getElementById("stop-intro-btn");
-    const introAudio = new Audio();
-    const rayAudioControls = document.getElementById("ray-audio-controls");
-    const rayStartWrap = document.getElementById("ray-start-wrap");
-
-    const talkBtn = document.getElementById("talk-btn");
-    const stopVoiceBtn = document.getElementById("stop-voice-btn");
-    const voiceStateEl = document.getElementById("voice-state");
+    const replayWelcomeBtn = document.getElementById("replay-welcome-btn");
     const rayImageWrap = document.getElementById("ray-image-wrap");
+    const voiceStateEl = document.getElementById("voice-state");
+    const beginBtn = document.getElementById("begin-btn");
+    const stopConversationBtn = document.getElementById("stop-conversation-btn");
+    const openMicIndicatorEl = document.getElementById("open-mic-indicator");
+    const openMicTextEl = document.getElementById("open-mic-text");
 
     let currentReplyAudio = null;
     let currentReplyAudioUrl = null;
-    let recognition = null;
-    let isListening = false;
+    let welcomeAudio = null;
+
+    let mediaStream = null;
+    let mediaRecorder = null;
+    let analyser = null;
+    let audioContext = null;
+    let micSource = null;
+    let monitorFrame = null;
+    let recordedChunks = [];
+    let currentMimeType = "";
+
+    let conversationActive = false;
+    let isProcessingVoice = false;
+    let isGeneratingSpeech = false;
+    let discardCurrentRecording = false;
+    let lastSpeechTime = 0;
+    let listeningResumeAt = 0;
+
+    const VOLUME_THRESHOLD = 0.035;
+    const SILENCE_MS = 1100;
+    const MIN_AUDIO_BYTES = 2500;
 
     function maybeShowUpgradePanel() {
       const limitReached = localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true";
@@ -502,204 +450,10 @@
       if (limitReached) {
         chatInput.disabled = true;
         sendChatBtn.disabled = true;
-        talkBtn.disabled = true;
+        beginBtn.disabled = true;
+        stopConversationBtn.disabled = false;
       }
     }
-
-    function setVoiceState(state, text = "") {
-      rayImageWrap.classList.remove("listening", "speaking");
-
-      if (state === "listening") {
-        rayImageWrap.classList.add("listening");
-      }
-      if (state === "speaking") {
-        rayImageWrap.classList.add("speaking");
-      }
-
-      voiceStateEl.textContent = text;
-    }
-
-    function stopReplyAudio() {
-      if (currentReplyAudio) {
-        currentReplyAudio.pause();
-        currentReplyAudio.currentTime = 0;
-        currentReplyAudio = null;
-      }
-
-      if (currentReplyAudioUrl) {
-        URL.revokeObjectURL(currentReplyAudioUrl);
-        currentReplyAudioUrl = null;
-      }
-
-      if (!isListening) {
-        setVoiceState("idle", "");
-      }
-    }
-
-    function playAudioBase64(audioBase64) {
-      stopReplyAudio();
-
-      if (!audioBase64) return;
-
-      try {
-        const byteCharacters = atob(audioBase64);
-        const byteNumbers = new Array(byteCharacters.length);
-
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: "audio/mpeg" });
-        currentReplyAudioUrl = URL.createObjectURL(blob);
-        currentReplyAudio = new Audio(currentReplyAudioUrl);
-
-        currentReplyAudio.onplay = () => {
-          setVoiceState("speaking", "Ray is speaking...");
-        };
-
-        currentReplyAudio.onended = () => {
-          stopReplyAudio();
-        };
-
-        currentReplyAudio.onerror = () => {
-          stopReplyAudio();
-        };
-
-        currentReplyAudio.play().catch((err) => {
-          console.error("Reply audio could not play:", err);
-          stopReplyAudio();
-        });
-      } catch (err) {
-        console.error("Could not decode ElevenLabs audio:", err);
-      }
-    }
-
-    function initSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-      if (!SpeechRecognition) {
-        chatStatusEl.textContent = "Voice input is not supported in this browser.";
-        talkBtn.disabled = true;
-        return;
-      }
-
-      recognition = new SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onstart = () => {
-        isListening = true;
-        setVoiceState("listening", "Listening...");
-        chatStatusEl.textContent = "Listening...";
-      };
-
-      recognition.onresult = async (event) => {
-        const transcript = event?.results?.[0]?.[0]?.transcript?.trim() || "";
-        if (!transcript) return;
-        await sendChatMessage(transcript);
-      };
-
-      recognition.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        chatStatusEl.textContent = "Voice input had a problem. Please try again.";
-      };
-
-      recognition.onend = () => {
-        isListening = false;
-        if (!currentReplyAudio) {
-          setVoiceState("idle", "");
-        }
-        if (chatStatusEl.textContent === "Listening...") {
-          chatStatusEl.textContent = "";
-        }
-      };
-    }
-
-    function startListening() {
-      if (localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true") {
-        maybeShowUpgradePanel();
-        chatStatusEl.textContent = "You’ve reached the free preview limit.";
-        return;
-      }
-
-      if (!recognition) {
-        initSpeechRecognition();
-      }
-
-      if (!recognition || isListening) return;
-
-      stopReplyAudio();
-
-      try {
-        recognition.start();
-      } catch (err) {
-        console.error("Could not start recognition:", err);
-      }
-    }
-
-    function stopAllVoice() {
-      if (recognition && isListening) {
-        try {
-          recognition.stop();
-        } catch (err) {
-          console.error(err);
-        }
-      }
-      stopReplyAudio();
-      setVoiceState("idle", "");
-    }
-
-    function getIntroStorageKey() {
-      return `tryRayIntroPlayed_${getTryRayUserId()}`;
-    }
-
-    function playWelcomeIntro() {
-      introAudio.src = BASIC_INTRO_URL;
-      introAudio.play().catch((err) => {
-        console.error("Intro audio could not play:", err);
-      });
-    }
-
-    function pauseWelcomeIntro() {
-      introAudio.pause();
-    }
-
-    function stopWelcomeIntro() {
-      introAudio.pause();
-      introAudio.currentTime = 0;
-    }
-
-    function maybePlayIntroOnce() {
-      const introKey = getIntroStorageKey();
-      const alreadyPlayed = localStorage.getItem(introKey) === "true";
-
-      if (alreadyPlayed) {
-        if (rayStartWrap) rayStartWrap.style.display = "none";
-        if (rayAudioControls) rayAudioControls.style.display = "flex";
-        return;
-      }
-
-      if (rayStartWrap) rayStartWrap.style.display = "flex";
-      if (rayAudioControls) rayAudioControls.style.display = "none";
-    }
-
-    function showAudioControls() {
-      if (rayStartWrap) rayStartWrap.style.display = "none";
-      if (rayAudioControls) rayAudioControls.style.display = "flex";
-    }
-
-    startIntroBtn.addEventListener("click", () => {
-      showAudioControls();
-      playWelcomeIntro();
-      localStorage.setItem(getIntroStorageKey(), "true");
-      chatStatusEl.textContent = "";
-    });
-
-    playIntroBtn.addEventListener("click", playWelcomeIntro);
-    pauseIntroBtn.addEventListener("click", pauseWelcomeIntro);
-    stopIntroBtn.addEventListener("click", stopWelcomeIntro);
 
     function escapeHtml(text) {
       return String(text)
@@ -725,6 +479,149 @@
 
       chatHistoryEl.appendChild(msg);
       chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
+    }
+
+    function setVoiceState(state, text = "") {
+      rayImageWrap.classList.remove("listening", "speaking");
+
+      if (state === "listening") rayImageWrap.classList.add("listening");
+      if (state === "speaking") rayImageWrap.classList.add("speaking");
+
+      voiceStateEl.textContent = text;
+    }
+
+    function updateOpenMicIndicator() {
+      openMicIndicatorEl.classList.toggle("on", conversationActive);
+      openMicTextEl.textContent = conversationActive ? "Open Mic On" : "Open Mic Off";
+      beginBtn.disabled = conversationActive || localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true";
+      stopConversationBtn.disabled = !conversationActive;
+    }
+
+    function stopReplyAudio() {
+      if (currentReplyAudio) {
+        currentReplyAudio.pause();
+        currentReplyAudio.currentTime = 0;
+        currentReplyAudio = null;
+      }
+
+      if (currentReplyAudioUrl) {
+        URL.revokeObjectURL(currentReplyAudioUrl);
+        currentReplyAudioUrl = null;
+      }
+
+      if (!conversationActive && !isGeneratingSpeech) {
+        setVoiceState("idle", "");
+      }
+    }
+
+    function playAudioBase64(audioBase64) {
+      stopReplyAudio();
+      if (!audioBase64) return;
+
+      try {
+        const byteCharacters = atob(audioBase64);
+        const byteNumbers = new Array(byteCharacters.length);
+
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: "audio/mpeg" });
+        currentReplyAudioUrl = URL.createObjectURL(blob);
+        currentReplyAudio = new Audio(currentReplyAudioUrl);
+        currentReplyAudio.playbackRate = 1.18;
+
+        currentReplyAudio.onplay = () => {
+          setVoiceState("speaking", "Ray is speaking...");
+        };
+
+        currentReplyAudio.onended = () => {
+          listeningResumeAt = Date.now() + 450;
+          stopReplyAudio();
+          chatStatusEl.textContent = conversationActive ? "Open Mic on. Start speaking any time." : "";
+          if (conversationActive) {
+            setVoiceState("listening", "Open Mic on");
+          }
+        };
+
+        currentReplyAudio.onerror = () => {
+          listeningResumeAt = Date.now() + 450;
+          stopReplyAudio();
+          chatStatusEl.textContent = conversationActive ? "Open Mic on. Start speaking any time." : "";
+        };
+
+        currentReplyAudio.play().catch((err) => {
+          console.error("Reply audio could not play:", err);
+          stopReplyAudio();
+          chatStatusEl.textContent = conversationActive ? "Open Mic on. Start speaking any time." : "";
+        });
+      } catch (err) {
+        console.error("Could not decode ElevenLabs audio:", err);
+        chatStatusEl.textContent = conversationActive ? "Open Mic on. Start speaking any time." : "";
+      }
+    }
+
+    async function speakReply(reply) {
+      if (!reply) return;
+
+      isGeneratingSpeech = true;
+      chatStatusEl.textContent = "Generating Ray's voice...";
+
+      try {
+        const res = await fetch(SPEAK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: reply })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Speak failed");
+
+        playAudioBase64(data.audioBase64);
+      } catch (err) {
+        console.error(err);
+        chatStatusEl.textContent = conversationActive ? "Open Mic on. Start speaking any time." : "";
+      } finally {
+        isGeneratingSpeech = false;
+      }
+    }
+
+    function replayWelcome() {
+      try {
+        if (!welcomeAudio) {
+          welcomeAudio = new Audio(BASIC_INTRO_URL);
+          welcomeAudio.playbackRate = 1.08;
+
+          welcomeAudio.onplay = () => {
+            stopReplyAudio();
+            setVoiceState("speaking", "Playing welcome...");
+          };
+
+          welcomeAudio.onended = () => {
+            chatStatusEl.textContent = conversationActive ? "Open Mic on. Start speaking any time." : "";
+            if (conversationActive) {
+              setVoiceState("listening", "Open Mic on");
+            } else {
+              setVoiceState("idle", "");
+            }
+          };
+
+          welcomeAudio.onerror = () => {
+            chatStatusEl.textContent = "";
+            setVoiceState("idle", "");
+          };
+        } else {
+          welcomeAudio.pause();
+          welcomeAudio.currentTime = 0;
+        }
+
+        welcomeAudio.play().catch((err) => {
+          console.error("Intro audio could not play:", err);
+        });
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     function downloadChatTranscript() {
@@ -883,28 +780,24 @@
       }
     }
 
-    async function sendChatMessage(overrideMessage = "") {
+    async function sendChatMessage() {
       if (localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true") {
         maybeShowUpgradePanel();
         chatStatusEl.textContent = "You’ve reached the free preview limit.";
         return;
       }
 
-      const message = (overrideMessage || chatInput.value || "").trim();
+      const message = (chatInput.value || "").trim();
       const projectName = getSelectedProjectName();
 
       if (!message) return;
 
       stopReplyAudio();
       addChatMessage("user", message);
-
-      if (!overrideMessage) {
-        chatInput.value = "";
-      }
-
+      chatInput.value = "";
       chatStatusEl.textContent = "Ray is thinking...";
       sendChatBtn.disabled = true;
-      talkBtn.disabled = true;
+      beginBtn.disabled = true;
 
       try {
         const res = await fetch(TRY_CHAT_URL, {
@@ -915,19 +808,19 @@
           body: JSON.stringify({
             userId: getTryRayUserId(),
             projectName,
-            message
+            message,
+            includeAudio: false,
+            voiceMode: true
           })
         });
 
         const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Chat failed");
 
-        if (!res.ok) {
-          throw new Error(data.error || "Chat failed");
-        }
-
-        addChatMessage("assistant", data.reply || "No response.");
-        playAudioBase64(data.audioBase64);
+        const reply = data.reply || "No response.";
+        addChatMessage("assistant", reply);
         chatStatusEl.textContent = "";
+        speakReply(reply);
 
         if (projectName) {
           addProjectNameToSavedList(projectName);
@@ -948,7 +841,229 @@
       } finally {
         if (localStorage.getItem(TRY_RAY_LIMIT_KEY) !== "true") {
           sendChatBtn.disabled = false;
-          talkBtn.disabled = false;
+          beginBtn.disabled = conversationActive;
+        }
+      }
+    }
+
+    async function ensureMicReady() {
+      if (mediaStream && analyser && audioContext) return;
+
+      mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          channelCount: 1
+        }
+      });
+
+      currentMimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : MediaRecorder.isTypeSupported("audio/webm")
+          ? "audio/webm"
+          : "";
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      micSource = audioContext.createMediaStreamSource(mediaStream);
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      micSource.connect(analyser);
+    }
+
+    function getCurrentVolume() {
+      if (!analyser) return 0;
+
+      const bufferLength = analyser.fftSize;
+      const data = new Uint8Array(bufferLength);
+      analyser.getByteTimeDomainData(data);
+
+      let sumSquares = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        const normalized = (data[i] - 128) / 128;
+        sumSquares += normalized * normalized;
+      }
+
+      return Math.sqrt(sumSquares / bufferLength);
+    }
+
+    function startSegmentRecorder() {
+      if (!mediaStream || isProcessingVoice || isGeneratingSpeech || currentReplyAudio) return;
+      if (mediaRecorder && mediaRecorder.state === "recording") return;
+
+      recordedChunks = [];
+      discardCurrentRecording = false;
+
+      mediaRecorder = new MediaRecorder(
+        mediaStream,
+        currentMimeType ? { mimeType: currentMimeType } : undefined
+      );
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        if (discardCurrentRecording) {
+          recordedChunks = [];
+          discardCurrentRecording = false;
+          isProcessingVoice = false;
+          return;
+        }
+
+        const blob = new Blob(recordedChunks, {
+          type: currentMimeType || "audio/webm"
+        });
+
+        recordedChunks = [];
+
+        if (blob.size < MIN_AUDIO_BYTES) {
+          isProcessingVoice = false;
+          if (conversationActive) {
+            chatStatusEl.textContent = "Open Mic on. Start speaking any time.";
+          }
+          return;
+        }
+
+        try {
+          await sendVoiceBlob(blob);
+        } finally {
+          isProcessingVoice = false;
+        }
+      };
+
+      mediaRecorder.start();
+      lastSpeechTime = Date.now();
+      setVoiceState("listening", "Open Mic on");
+    }
+
+    function stopSegmentRecorder({ discard = false } = {}) {
+      if (!mediaRecorder || mediaRecorder.state !== "recording") return;
+
+      discardCurrentRecording = discard;
+      isProcessingVoice = !discard;
+      mediaRecorder.stop();
+    }
+
+    function monitorConversation() {
+      if (!conversationActive) return;
+
+      const now = Date.now();
+      const busy = isProcessingVoice || isGeneratingSpeech || !!currentReplyAudio || now < listeningResumeAt;
+
+      if (!busy) {
+        const volume = getCurrentVolume();
+
+        if (volume > VOLUME_THRESHOLD) {
+          lastSpeechTime = now;
+          startSegmentRecorder();
+        } else if (mediaRecorder && mediaRecorder.state === "recording" && now - lastSpeechTime > SILENCE_MS) {
+          chatStatusEl.textContent = "Ray is thinking...";
+          stopSegmentRecorder();
+        }
+      }
+
+      monitorFrame = requestAnimationFrame(monitorConversation);
+    }
+
+    async function beginConversation() {
+      if (localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true") {
+        maybeShowUpgradePanel();
+        chatStatusEl.textContent = "You’ve reached the free preview limit.";
+        return;
+      }
+
+      if (conversationActive) return;
+
+      stopReplyAudio();
+
+      try {
+        await ensureMicReady();
+        conversationActive = true;
+        updateOpenMicIndicator();
+        chatStatusEl.textContent = "Open Mic on. Start speaking any time.";
+        setVoiceState("listening", "Open Mic on");
+
+        if (monitorFrame) {
+          cancelAnimationFrame(monitorFrame);
+        }
+        monitorConversation();
+      } catch (err) {
+        console.error(err);
+        chatStatusEl.textContent = "Microphone access was blocked or unavailable.";
+      }
+    }
+
+    async function stopConversation() {
+      conversationActive = false;
+      updateOpenMicIndicator();
+      chatStatusEl.textContent = "";
+      setVoiceState("idle", "");
+
+      if (monitorFrame) {
+        cancelAnimationFrame(monitorFrame);
+        monitorFrame = null;
+      }
+
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        stopSegmentRecorder({ discard: true });
+      }
+
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
+        mediaStream = null;
+      }
+
+      if (audioContext) {
+        await audioContext.close();
+        audioContext = null;
+      }
+
+      analyser = null;
+      micSource = null;
+    }
+
+    async function sendVoiceBlob(blob) {
+      const formData = new FormData();
+      formData.append("audio", blob, "voice.webm");
+      formData.append("userId", getTryRayUserId());
+
+      sendChatBtn.disabled = true;
+      beginBtn.disabled = true;
+
+      try {
+        const res = await fetch(TRY_VOICE_CHAT_URL, {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Voice chat failed");
+
+        if (data.transcript) {
+          addChatMessage("user", data.transcript);
+        }
+
+        const reply = data.reply || "No response.";
+        addChatMessage("assistant", reply);
+        chatStatusEl.textContent = "";
+        speakReply(reply);
+
+        if (data.limitReached) {
+          localStorage.setItem(TRY_RAY_LIMIT_KEY, "true");
+          maybeShowUpgradePanel();
+          chatStatusEl.textContent = "You’ve reached the free preview limit.";
+          stopConversation();
+        }
+      } catch (err) {
+        console.error(err);
+        chatStatusEl.textContent = "Voice chat failed. Please try again.";
+      } finally {
+        if (localStorage.getItem(TRY_RAY_LIMIT_KEY) !== "true") {
+          sendChatBtn.disabled = false;
+          beginBtn.disabled = conversationActive;
         }
       }
     }
@@ -967,9 +1082,10 @@
 
     newProjectNameInput.addEventListener("input", updateProjectContextStatus);
 
-    talkBtn.addEventListener("click", startListening);
-    stopVoiceBtn.addEventListener("click", stopAllVoice);
-    sendChatBtn.addEventListener("click", () => sendChatMessage());
+    replayWelcomeBtn.addEventListener("click", replayWelcome);
+    sendChatBtn.addEventListener("click", sendChatMessage);
+    beginBtn.addEventListener("click", beginConversation);
+    stopConversationBtn.addEventListener("click", stopConversation);
     downloadChatBtn.addEventListener("click", downloadChatTranscript);
 
     chatInput.addEventListener("keydown", (e) => {
@@ -979,13 +1095,11 @@
       }
     });
 
-    initSpeechRecognition();
-
     loadProjectsForUser().finally(() => {
       syncProjectInputMode();
     });
 
-    maybePlayIntroOnce();
+    updateOpenMicIndicator();
     maybeShowUpgradePanel();
   </script>
 </body>
