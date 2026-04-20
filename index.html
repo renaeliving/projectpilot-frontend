@@ -702,10 +702,10 @@
         await sendChatMessage(transcript);
       };
 
-      recognition.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        chatStatusEl.textContent = "Voice input had a problem. Please try again.";
-      };
+     recognition.onerror = (event) => {
+  console.error("Speech recognition error:", event.error);
+  chatStatusEl.textContent = "Voice input error: " + event.error;
+};
 
       recognition.onend = () => {
         isListening = false;
