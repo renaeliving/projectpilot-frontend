@@ -191,17 +191,6 @@
       min-height: 1.2em;
     }
 
-    #analysis-result {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid #111827;
-      font-size: 0.86rem;
-      color: #e5e7eb;
-      max-height: 260px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-    }
-
     #chat-history {
       max-height: 320px;
       overflow-y: auto;
@@ -345,7 +334,6 @@
         </div>
 
         <div id="upload-status"></div>
-        <div id="analysis-result"></div>
       </section>
 
       <div id="upgrade-panel" class="upload-panel" style="display:none;">
@@ -494,7 +482,6 @@
     const fileInput = document.getElementById("schedule-file");
     const analyzeBtn = document.getElementById("analyze-btn");
     const statusEl = document.getElementById("upload-status");
-    const resultEl = document.getElementById("analysis-result");
     const uploadPanelEl = document.getElementById("upload-panel");
     const upgradePanelEl = document.getElementById("upgrade-panel");
     const csvFormatHelpBtn = document.getElementById("csv-format-help-btn");
@@ -827,7 +814,6 @@
 
       analyzeBtn.disabled = true;
       statusEl.textContent = "Uploading and analyzing your schedule...";
-      resultEl.textContent = "";
 
       try {
         const res = await fetch(UPLOAD_URL, {
@@ -835,27 +821,32 @@
           body: formData,
         });
 
-        if (!res.ok) {
-          const text = await res.text();
-          console.error("Upload error:", text);
-          statusEl.textContent = "There was an error analyzing the file. Please check that it's a CSV export.";
-          return;
-        }
-
         const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Upload failed");
+        }
 
         if (data.error) {
           statusEl.textContent = data.error;
           return;
         }
 
-        statusEl.textContent = "Here’s Ray’s assessment of your schedule:";
-        resultEl.textContent = data.analysis || "No analysis returned.";
+        statusEl.textContent = "Schedule uploaded. Ray added the review to the chat.";
+
+        addChatMessage(
+          "assistant",
+          data.reply || "I reviewed your schedule, but no analysis text was returned."
+        );
+
         addProjectNameToSavedList(projectName);
         localStorage.setItem(LAST_PROJECT_KEY, projectName);
         renderProjectNameOptions();
         projectNameInput.value = projectName;
         syncProjectInputMode();
+
+        fileInput.value = "";
+        chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
       } catch (err) {
         console.error(err);
         statusEl.textContent = "Something went wrong contacting the server. Please try again in a moment.";
