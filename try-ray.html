@@ -41,11 +41,37 @@
       top: 24px;
     }
 
-    #ray-image {
+    #ray-image-wrap {
+      position: relative;
       width: 350px;
+      max-width: 100%;
+      border-radius: 24px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #ray-image-wrap.listening {
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.28), 0 0 30px rgba(56, 189, 248, 0.22);
+      transform: scale(1.01);
+    }
+
+    #ray-image-wrap.speaking {
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.28), 0 0 30px rgba(37, 99, 235, 0.26);
+      transform: scale(1.01);
+    }
+
+    #ray-image {
+      width: 100%;
       max-width: 100%;
       height: auto;
       display: block;
+      border-radius: 24px;
+    }
+
+    #voice-state {
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      min-height: 1.2em;
+      text-align: center;
     }
 
     #ray-start-wrap {
@@ -147,7 +173,8 @@
       cursor: not-allowed;
     }
 
-    .btn {
+    .btn,
+    .voice-btn {
       border: none;
       border-radius: 999px;
       padding: 8px 16px;
@@ -158,7 +185,13 @@
       white-space: nowrap;
     }
 
-    .btn:disabled {
+    .voice-btn.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .btn:disabled,
+    .voice-btn:disabled {
       opacity: 0.6;
       cursor: default;
     }
@@ -210,72 +243,10 @@
     .chat-assistant {
       background: #111827;
     }
-    .markdown-content p {
-  margin: 0 0 10px;
-}
 
-.markdown-content p:last-child {
-  margin-bottom: 0;
-}
-
-.markdown-content ul,
-.markdown-content ol {
-  margin: 8px 0 10px 20px;
-  padding: 0;
-}
-
-.markdown-content li {
-  margin: 4px 0;
-}
-
-.markdown-content h1,
-.markdown-content h2,
-.markdown-content h3 {
-  margin: 10px 0 8px;
-  line-height: 1.3;
-}
-
-.markdown-content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 10px 0;
-}
-
-.markdown-content th,
-.markdown-content td {
-  border: 1px solid #334155;
-  padding: 8px;
-  text-align: left;
-  vertical-align: top;
-}
-
-.markdown-content code {
-  background: rgba(255,255,255,0.08);
-  padding: 2px 5px;
-  border-radius: 6px;
-}
-
-.markdown-content pre {
-  background: #020617;
-  border: 1px solid #334155;
-  border-radius: 10px;
-  padding: 10px;
-  overflow-x: auto;
-}
-
-.markdown-content a {
-  color: #38bdf8;
-  text-decoration: underline;
-}
-
-    .chat-message strong.message-label {
+    .message-label {
       display: inline-block;
       margin-bottom: 6px;
-    }
-
-    .markdown-content {
-      white-space: normal;
-      word-break: break-word;
     }
 
     .markdown-content p {
@@ -285,18 +256,6 @@
     .markdown-content p:last-child {
       margin-bottom: 0;
     }
-
-    .markdown-content h1,
-    .markdown-content h2,
-    .markdown-content h3 {
-      margin: 10px 0 8px;
-      color: #f9fafb;
-      line-height: 1.3;
-    }
-
-    .markdown-content h1 { font-size: 1.2rem; }
-    .markdown-content h2 { font-size: 1.08rem; }
-    .markdown-content h3 { font-size: 0.98rem; }
 
     .markdown-content ul,
     .markdown-content ol {
@@ -308,46 +267,17 @@
       margin: 4px 0;
     }
 
-    .markdown-content code {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 2px 5px;
-      border-radius: 6px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.85em;
-    }
-
-    .markdown-content pre {
-      background: #020617;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 10px;
-      overflow-x: auto;
-      margin: 10px 0;
-    }
-
-    .markdown-content pre code {
-      background: transparent;
-      padding: 0;
-      border-radius: 0;
-    }
-
-    .markdown-content blockquote {
-      border-left: 3px solid #38bdf8;
-      margin: 10px 0;
-      padding: 4px 0 4px 12px;
-      color: #cbd5e1;
-    }
-
-    .markdown-content a {
-      color: #38bdf8;
-      text-decoration: underline;
+    .markdown-content h1,
+    .markdown-content h2,
+    .markdown-content h3 {
+      margin: 10px 0 8px;
+      line-height: 1.3;
     }
 
     .markdown-content table {
       width: 100%;
       border-collapse: collapse;
       margin: 10px 0;
-      font-size: 0.86rem;
     }
 
     .markdown-content th,
@@ -358,9 +288,23 @@
       vertical-align: top;
     }
 
-    .markdown-content th {
-      background: rgba(255, 255, 255, 0.06);
-      color: #f9fafb;
+    .markdown-content code {
+      background: rgba(255,255,255,0.08);
+      padding: 2px 5px;
+      border-radius: 6px;
+    }
+
+    .markdown-content pre {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 10px;
+      overflow-x: auto;
+    }
+
+    .markdown-content a {
+      color: #38bdf8;
+      text-decoration: underline;
     }
 
     .feature-disabled {
@@ -391,7 +335,7 @@
         position: static;
       }
 
-      #ray-image {
+      #ray-image-wrap {
         width: 220px;
       }
     }
@@ -400,11 +344,15 @@
 <body>
   <div id="page-root">
     <div id="ray-sidebar">
-      <img
-        id="ray-image"
-        src="https://static.wixstatic.com/media/3cf059_a5281870c7f5443d8d98225203ffda7a~mv2.png"
-        alt="Ray"
-      />
+      <div id="ray-image-wrap">
+        <img
+          id="ray-image"
+          src="https://static.wixstatic.com/media/3cf059_a5281870c7f5443d8d98225203ffda7a~mv2.png"
+          alt="Ray"
+        />
+      </div>
+
+      <div id="voice-state"></div>
 
       <div id="ray-start-wrap">
         <button id="start-intro-btn" class="btn" type="button">New here? Click to meet Ray</button>
@@ -454,7 +402,9 @@
             id="chat-input"
             placeholder="Ask Ray a question..."
           />
-          <button id="send-chat-btn" class="btn">Send</button>
+          <button id="send-chat-btn" class="btn" type="button">Send</button>
+          <button id="talk-btn" class="voice-btn" type="button">Talk</button>
+          <button id="stop-voice-btn" class="voice-btn secondary" type="button">Stop</button>
         </div>
 
         <div id="chat-status"></div>
@@ -466,7 +416,7 @@
 
         <div class="upload-row">
           <input type="file" id="schedule-file" accept=".csv" disabled />
-          <button id="analyze-btn" class="btn" disabled>Analyze schedule</button>
+          <button id="analyze-btn" class="btn" disabled type="button">Analyze schedule</button>
         </div>
 
         <div class="feature-disabled">
@@ -492,6 +442,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     const BACKEND_BASE = "https://projectpilot-backend-zkad.onrender.com";
     const TRY_CHAT_URL = `${BACKEND_BASE}/api/try-ray`;
@@ -533,6 +484,16 @@
     const rayAudioControls = document.getElementById("ray-audio-controls");
     const rayStartWrap = document.getElementById("ray-start-wrap");
 
+    const talkBtn = document.getElementById("talk-btn");
+    const stopVoiceBtn = document.getElementById("stop-voice-btn");
+    const voiceStateEl = document.getElementById("voice-state");
+    const rayImageWrap = document.getElementById("ray-image-wrap");
+
+    let currentReplyAudio = null;
+    let currentReplyAudioUrl = null;
+    let recognition = null;
+    let isListening = false;
+
     function maybeShowUpgradePanel() {
       const limitReached = localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true";
       if (upgradePanelEl) {
@@ -541,7 +502,153 @@
       if (limitReached) {
         chatInput.disabled = true;
         sendChatBtn.disabled = true;
+        talkBtn.disabled = true;
       }
+    }
+
+    function setVoiceState(state, text = "") {
+      rayImageWrap.classList.remove("listening", "speaking");
+
+      if (state === "listening") {
+        rayImageWrap.classList.add("listening");
+      }
+      if (state === "speaking") {
+        rayImageWrap.classList.add("speaking");
+      }
+
+      voiceStateEl.textContent = text;
+    }
+
+    function stopReplyAudio() {
+      if (currentReplyAudio) {
+        currentReplyAudio.pause();
+        currentReplyAudio.currentTime = 0;
+        currentReplyAudio = null;
+      }
+
+      if (currentReplyAudioUrl) {
+        URL.revokeObjectURL(currentReplyAudioUrl);
+        currentReplyAudioUrl = null;
+      }
+
+      if (!isListening) {
+        setVoiceState("idle", "");
+      }
+    }
+
+    function playAudioBase64(audioBase64) {
+      stopReplyAudio();
+
+      if (!audioBase64) return;
+
+      try {
+        const byteCharacters = atob(audioBase64);
+        const byteNumbers = new Array(byteCharacters.length);
+
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: "audio/mpeg" });
+        currentReplyAudioUrl = URL.createObjectURL(blob);
+        currentReplyAudio = new Audio(currentReplyAudioUrl);
+
+        currentReplyAudio.onplay = () => {
+          setVoiceState("speaking", "Ray is speaking...");
+        };
+
+        currentReplyAudio.onended = () => {
+          stopReplyAudio();
+        };
+
+        currentReplyAudio.onerror = () => {
+          stopReplyAudio();
+        };
+
+        currentReplyAudio.play().catch((err) => {
+          console.error("Reply audio could not play:", err);
+          stopReplyAudio();
+        });
+      } catch (err) {
+        console.error("Could not decode ElevenLabs audio:", err);
+      }
+    }
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        chatStatusEl.textContent = "Voice input is not supported in this browser.";
+        talkBtn.disabled = true;
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        isListening = true;
+        setVoiceState("listening", "Listening...");
+        chatStatusEl.textContent = "Listening...";
+      };
+
+      recognition.onresult = async (event) => {
+        const transcript = event?.results?.[0]?.[0]?.transcript?.trim() || "";
+        if (!transcript) return;
+        await sendChatMessage(transcript);
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        chatStatusEl.textContent = "Voice input had a problem. Please try again.";
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        if (!currentReplyAudio) {
+          setVoiceState("idle", "");
+        }
+        if (chatStatusEl.textContent === "Listening...") {
+          chatStatusEl.textContent = "";
+        }
+      };
+    }
+
+    function startListening() {
+      if (localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true") {
+        maybeShowUpgradePanel();
+        chatStatusEl.textContent = "You’ve reached the free preview limit.";
+        return;
+      }
+
+      if (!recognition) {
+        initSpeechRecognition();
+      }
+
+      if (!recognition || isListening) return;
+
+      stopReplyAudio();
+
+      try {
+        recognition.start();
+      } catch (err) {
+        console.error("Could not start recognition:", err);
+      }
+    }
+
+    function stopAllVoice() {
+      if (recognition && isListening) {
+        try {
+          recognition.stop();
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      stopReplyAudio();
+      setVoiceState("idle", "");
     }
 
     function getIntroStorageKey() {
@@ -603,179 +710,22 @@
         .replace(/'/g, "&#39;");
     }
 
-    function parseInlineMarkdown(text) {
-      let html = escapeHtml(text);
+    function addChatMessage(role, text) {
+      const msg = document.createElement("div");
+      msg.className = `chat-message ${role === "user" ? "chat-user" : "chat-assistant"}`;
 
-      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-      html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-      html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-      html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+      if (role === "user") {
+        msg.innerHTML = `<strong class="message-label">You:</strong><br>${escapeHtml(text)}`;
+      } else {
+        const markdownHtml = window.marked
+          ? marked.parse(text || "")
+          : escapeHtml(text || "");
+        msg.innerHTML = `<strong class="message-label">Ray:</strong><div class="markdown-content">${markdownHtml}</div>`;
+      }
 
-      return html;
+      chatHistoryEl.appendChild(msg);
+      chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
     }
-
-    function renderMarkdown(text) {
-      if (!text) return "";
-
-      let normalized = String(text).replace(/\r\n/g, "\n");
-      const codeBlocks = [];
-
-      normalized = normalized.replace(/```([\s\S]*?)```/g, (_, code) => {
-        const token = `__CODEBLOCK_${codeBlocks.length}__`;
-        codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`);
-        return token;
-      });
-
-      const lines = normalized.split("\n");
-      let html = "";
-      let inUl = false;
-      let inOl = false;
-      let inTable = false;
-
-      function closeLists() {
-        if (inUl) {
-          html += "</ul>";
-          inUl = false;
-        }
-        if (inOl) {
-          html += "</ol>";
-          inOl = false;
-        }
-      }
-
-      function closeTable() {
-        if (inTable) {
-          html += "</tbody></table>";
-          inTable = false;
-        }
-      }
-
-      function isTableLine(line) {
-        return /^\|(.+)\|$/.test(line.trim());
-      }
-
-      function isSeparatorLine(line) {
-        return /^\|?[\s:-]+(\|[\s:-]+)+\|?$/.test(line.trim());
-      }
-
-      for (let i = 0; i < lines.length; i++) {
-        const rawLine = lines[i];
-        const line = rawLine.trim();
-
-        if (!line) {
-          closeLists();
-          closeTable();
-          continue;
-        }
-
-        if (line.startsWith("__CODEBLOCK_")) {
-          closeLists();
-          closeTable();
-          html += line;
-          continue;
-        }
-
-        if (isTableLine(line) && i + 1 < lines.length && isSeparatorLine(lines[i + 1])) {
-          closeLists();
-          closeTable();
-
-          const headers = line.slice(1, -1).split("|").map((cell) => parseInlineMarkdown(cell.trim()));
-          html += "<table><thead><tr>" + headers.map((h) => `<th>${h}</th>`).join("") + "</tr></thead><tbody>";
-          inTable = true;
-          i++;
-          continue;
-        }
-
-        if (inTable && isTableLine(line)) {
-          const cells = line.slice(1, -1).split("|").map((cell) => parseInlineMarkdown(cell.trim()));
-          html += "<tr>" + cells.map((c) => `<td>${c}</td>`).join("") + "</tr>";
-          continue;
-        } else {
-          closeTable();
-        }
-
-        if (/^###\s+/.test(line)) {
-          closeLists();
-          html += `<h3>${parseInlineMarkdown(line.replace(/^###\s+/, ""))}</h3>`;
-          continue;
-        }
-
-        if (/^##\s+/.test(line)) {
-          closeLists();
-          html += `<h2>${parseInlineMarkdown(line.replace(/^##\s+/, ""))}</h2>`;
-          continue;
-        }
-
-        if (/^#\s+/.test(line)) {
-          closeLists();
-          html += `<h1>${parseInlineMarkdown(line.replace(/^#\s+/, ""))}</h1>`;
-          continue;
-        }
-
-        if (/^>\s+/.test(line)) {
-          closeLists();
-          html += `<blockquote>${parseInlineMarkdown(line.replace(/^>\s+/, ""))}</blockquote>`;
-          continue;
-        }
-
-        if (/^[-*]\s+/.test(line)) {
-          closeTable();
-          if (inOl) {
-            html += "</ol>";
-            inOl = false;
-          }
-          if (!inUl) {
-            html += "<ul>";
-            inUl = true;
-          }
-          html += `<li>${parseInlineMarkdown(line.replace(/^[-*]\s+/, ""))}</li>`;
-          continue;
-        }
-
-        if (/^\d+\.\s+/.test(line)) {
-          closeTable();
-          if (inUl) {
-            html += "</ul>";
-            inUl = false;
-          }
-          if (!inOl) {
-            html += "<ol>";
-            inOl = true;
-          }
-          html += `<li>${parseInlineMarkdown(line.replace(/^\d+\.\s+/, ""))}</li>`;
-          continue;
-        }
-
-        closeLists();
-        html += `<p>${parseInlineMarkdown(line)}</p>`;
-      }
-
-      closeLists();
-      closeTable();
-
-      codeBlocks.forEach((block, index) => {
-        html = html.replace(`__CODEBLOCK_${index}__`, block);
-      });
-
-      return html;
-    }
-
-   function addChatMessage(role, text) {
-  const msg = document.createElement("div");
-  msg.className = `chat-message ${role === "user" ? "chat-user" : "chat-assistant"}`;
-
-  if (role === "user") {
-    msg.innerHTML = `<strong>You:</strong><br>${escapeHtml(text)}`;
-  } else {
-    const markdownHtml = window.marked
-      ? marked.parse(text || "")
-      : escapeHtml(text || "");
-    msg.innerHTML = `<strong>Ray:</strong><div class="markdown-content">${markdownHtml}</div>`;
-  }
-
-  chatHistoryEl.appendChild(msg);
-  chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
-}
 
     function downloadChatTranscript() {
       const projectName = getSelectedProjectName() || "general";
@@ -933,23 +883,28 @@
       }
     }
 
-    async function sendChatMessage() {
+    async function sendChatMessage(overrideMessage = "") {
       if (localStorage.getItem(TRY_RAY_LIMIT_KEY) === "true") {
         maybeShowUpgradePanel();
         chatStatusEl.textContent = "You’ve reached the free preview limit.";
         return;
       }
 
-      const message = (chatInput.value || "").trim();
+      const message = (overrideMessage || chatInput.value || "").trim();
       const projectName = getSelectedProjectName();
 
       if (!message) return;
 
+      stopReplyAudio();
       addChatMessage("user", message);
-      chatInput.value = "";
+
+      if (!overrideMessage) {
+        chatInput.value = "";
+      }
 
       chatStatusEl.textContent = "Ray is thinking...";
       sendChatBtn.disabled = true;
+      talkBtn.disabled = true;
 
       try {
         const res = await fetch(TRY_CHAT_URL, {
@@ -971,6 +926,7 @@
         }
 
         addChatMessage("assistant", data.reply || "No response.");
+        playAudioBase64(data.audioBase64);
         chatStatusEl.textContent = "";
 
         if (projectName) {
@@ -992,6 +948,7 @@
       } finally {
         if (localStorage.getItem(TRY_RAY_LIMIT_KEY) !== "true") {
           sendChatBtn.disabled = false;
+          talkBtn.disabled = false;
         }
       }
     }
@@ -1010,7 +967,9 @@
 
     newProjectNameInput.addEventListener("input", updateProjectContextStatus);
 
-    sendChatBtn.addEventListener("click", sendChatMessage);
+    talkBtn.addEventListener("click", startListening);
+    stopVoiceBtn.addEventListener("click", stopAllVoice);
+    sendChatBtn.addEventListener("click", () => sendChatMessage());
     downloadChatBtn.addEventListener("click", downloadChatTranscript);
 
     chatInput.addEventListener("keydown", (e) => {
@@ -1020,6 +979,8 @@
       }
     });
 
+    initSpeechRecognition();
+
     loadProjectsForUser().finally(() => {
       syncProjectInputMode();
     });
@@ -1027,7 +988,5 @@
     maybePlayIntroOnce();
     maybeShowUpgradePanel();
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</body>
 </body>
 </html>
